@@ -1,13 +1,14 @@
 TEMPLATE = app
 
-QT += qml quick widgets
+QT += qml quick widgets network
 
 SOURCES += main.cpp \
     route.cpp \
     direction.cpp \
     stop.cpp \
     directionmodel.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    gtwikibusfetcher.cpp
 
 RESOURCES += qml.qrc
 
@@ -22,4 +23,5 @@ HEADERS += \
     direction.h \
     stop.h \
     directionmodel.h \
-    mainwindow.h
+    mainwindow.h \
+    gtwikibusfetcher.h

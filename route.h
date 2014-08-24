@@ -3,7 +3,8 @@
 
 #include <QObject>
 #include <QSharedDataPointer>
-#include <QList>
+#include <QHash>
+#include <QColor>
 #include "direction.h"
 #include "stop.h"
 
@@ -19,15 +20,15 @@ public:
 
     QString getRouteName() const;
     QString getTag() const;
-    QList<Direction> getDirections() const;
-    QList<Stop> getStops() const;
-    int getColor() const;
+    QHash<QString, Direction>& getDirections();
+    QHash<QString, Stop>& getStops();
+    QColor getColor() const;
 
     void setRouteName(QString routeName);
     void setTag(QString tag);
-    void setDirections(QList<Direction> directions);
-    void setStops(QList<Stop> stops);
-    void setColor(int color);
+    void setDirections(QHash<QString, Direction> directions);
+    void setStops(QHash<QString, Stop> stops);
+    void setColor(QColor color);
 
 private:
     QSharedDataPointer<RouteData> data;

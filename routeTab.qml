@@ -9,10 +9,13 @@ Tab {
 
     ListView {
         id: directionsList
-        objectName: "directionsList"
         orientation: ListView.Vertical
         anchors.fill: parent
-        delegate: Button { text: name }
+        delegate: Button {
+            text: name
+            objectName: model.tag
+            onClicked: mainWindow.displayStops(directionsList.parent.objectName, objectName)
+        }
         model: myModel
     }
 }

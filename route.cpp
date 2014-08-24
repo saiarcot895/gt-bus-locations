@@ -5,9 +5,9 @@ class RouteData : public QSharedData {
 public:
     QString routeName;
     QString tag;
-    QList<Direction> directions;
-    QList<Stop> stops;
-    int color;
+    QHash<QString, Direction> directions;
+    QHash<QString, Stop> stops;
+    QColor color;
 };
 
 Route::Route() : data(new RouteData)
@@ -26,15 +26,15 @@ QString Route::getTag() const {
     return data->tag;
 }
 
-QList<Direction> Route::getDirections() const {
+QHash<QString, Direction>& Route::getDirections() {
     return data->directions;
 }
 
-QList<Stop> Route::getStops() const {
+QHash<QString, Stop>& Route::getStops() {
     return data->stops;
 }
 
-int Route::getColor() const {
+QColor Route::getColor() const {
     return data->color;
 }
 
@@ -46,15 +46,15 @@ void Route::setTag(QString tag) {
     data->tag = tag;
 }
 
-void Route::setDirections(QList<Direction> directions) {
+void Route::setDirections(QHash<QString, Direction> directions) {
     data->directions = directions;
 }
 
-void Route::setStops(QList<Stop> stops) {
+void Route::setStops(QHash<QString, Stop> stops) {
     data->stops = stops;
 }
 
-void Route::setColor(int color) {
+void Route::setColor(QColor color) {
     data->color = color;
 }
 

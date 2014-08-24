@@ -11,7 +11,8 @@ public:
     explicit DirectionModel(QObject *parent = 0);
 
     enum DirectionRoles {
-        Name = Qt::UserRole + 1
+        Name = Qt::UserRole + 1,
+        Tag
     };
 
     void setDirections(QList<Direction> directions);

@@ -25,15 +25,6 @@ ApplicationWindow {
     }
 
     Component {
-        id: directionsDelegate
-        Item {
-            Column {
-                Text { text: name }
-            }
-        }
-    }
-
-    Component {
         id: stopsDelegate
         Item {
             Column {

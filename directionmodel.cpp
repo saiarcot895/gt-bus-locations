@@ -16,9 +16,14 @@ int DirectionModel::rowCount(const QModelIndex &parent) const {
 QHash<int, QByteArray> DirectionModel::roleNames() const {
     QHash<int, QByteArray> roles;
     roles.insert(DirectionModel::Name, "name");
+    roles.insert(DirectionModel::Tag, "tag");
     return roles;
 }
 
 QVariant DirectionModel::data(const QModelIndex &index, int role) const {
-    return directions.at(index.row()).getDirectionName();
+    if (role == DirectionModel::Name) {
+        return directions.at(index.row()).getDirectionName();
+    } else if (role == DirectionModel::Tag) {
+        return directions.at(index.row()).getTag();
+    }
 }

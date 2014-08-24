@@ -5,7 +5,9 @@ QT += qml quick widgets
 SOURCES += main.cpp \
     route.cpp \
     direction.cpp \
-    stop.cpp
+    stop.cpp \
+    directionmodel.cpp \
+    mainwindow.cpp
 
 RESOURCES += qml.qrc
 
@@ -18,4 +20,6 @@ include(deployment.pri)
 HEADERS += \
     route.h \
     direction.h \
-    stop.h
+    stop.h \
+    directionmodel.h \
+    mainwindow.h

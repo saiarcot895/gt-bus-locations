@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>directionsTab.qml</file>
+        <file>routeTab.qml</file>
     </qresource>
 </RCC>

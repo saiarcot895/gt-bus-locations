@@ -1,6 +1,5 @@
 import QtQuick 2.2
 import QtQuick.Controls 1.1
-import QtQuick.Window 2.1
 
 ApplicationWindow {
     id: window
@@ -20,16 +19,9 @@ ApplicationWindow {
     }
 
     TabView {
+        id: tabView
+        objectName: "tabView"
         anchors.fill: parent
-
-        Tab {
-            id: tab1
-            source: "directionsTab.qml"
-            asynchronous: true
-            visible: status == Loader.Ready
-            title: "Tab"
-        }
-
     }
 
     Component {
@@ -48,5 +40,10 @@ ApplicationWindow {
                 Text { text: name }
             }
         }
+    }
+
+    function addRouteTab(routeName, tag, model) {
+        var component = Qt.createComponent("routeTab.qml");
+        var tab = component.createObject(tabView, {"title": routeName, "id": tag, "objectName": tag, "myModel": model});
     }
 }

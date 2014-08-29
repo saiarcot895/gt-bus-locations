@@ -18,12 +18,6 @@ ApplicationWindow {
         }
     }
 
-    TabView {
-        id: tabView
-        objectName: "tabView"
-        anchors.fill: parent
-    }
-
     Component {
         id: stopsDelegate
         Item {
@@ -33,8 +27,54 @@ ApplicationWindow {
         }
     }
 
-    function addRouteTab(routeName, tag, model) {
-        var component = Qt.createComponent("routeTab.qml");
-        var tab = component.createObject(tabView, {"title": routeName, "id": tag, "objectName": tag, "myModel": model});
+    Label {
+        id: label1
+        text: qsTr("Route")
+        anchors.leftMargin: 8
+        anchors.verticalCenter: comboBox1.verticalCenter
+        anchors.left: parent.left
+    }
+
+    ComboBox {
+        id: comboBox1
+        anchors.left: label1.right
+        anchors.leftMargin: 6
+        anchors.top: parent.top
+        anchors.topMargin: 8
+        model: routesModel
+    }
+
+    Label {
+        id: label2
+        text: qsTr("Direction")
+        anchors.verticalCenter: comboBox2.verticalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+    }
+
+    ComboBox {
+        id: comboBox2
+        anchors.top: comboBox1.bottom
+        anchors.topMargin: 6
+        anchors.left: label2.right
+        anchors.leftMargin: 6
+        model: directionsModel
+    }
+
+    Label {
+        id: label3
+        text: qsTr("Stop")
+        anchors.verticalCenter: comboBox3.verticalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+    }
+
+    ComboBox {
+        id: comboBox3
+        anchors.top: comboBox2.bottom
+        anchors.topMargin: 6
+        anchors.left: label3.right
+        anchors.leftMargin: 6
+        model: stopsModel
     }
 }

@@ -37,11 +37,15 @@ ApplicationWindow {
 
     ComboBox {
         id: comboBox1
+        objectName: "routesComboBox"
+        enabled: false
         anchors.left: label1.right
         anchors.leftMargin: 6
         anchors.top: parent.top
         anchors.topMargin: 8
         model: routesModel
+        textRole: "name"
+        onCurrentTextChanged: mainWindow.displayDirections(currentIndex)
     }
 
     Label {
@@ -54,11 +58,14 @@ ApplicationWindow {
 
     ComboBox {
         id: comboBox2
+        objectName: "directionsComboBox"
+        enabled: false
         anchors.top: comboBox1.bottom
         anchors.topMargin: 6
         anchors.left: label2.right
         anchors.leftMargin: 6
         model: directionsModel
+        textRole: "name"
     }
 
     Label {
@@ -71,6 +78,7 @@ ApplicationWindow {
 
     ComboBox {
         id: comboBox3
+        enabled: false
         anchors.top: comboBox2.bottom
         anchors.topMargin: 6
         anchors.left: label3.right

@@ -12,7 +12,8 @@ class MainWindow : public QObject
 public:
     explicit MainWindow(QObject *parent = 0);
 
-    Q_INVOKABLE void displayStops(QString routeTag, QString directionTag);
+    Q_INVOKABLE void displayDirections(int routeIndex);
+    Q_INVOKABLE void displayStops(int routeIndex, int directionsIndex);
 
 private slots:
     void displayRoutes();

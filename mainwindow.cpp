@@ -4,7 +4,7 @@
 #include <QQmlContext>
 #include <QDebug>
 
-#include "directionmodel.h"
+#include "routemodel.h"
 
 MainWindow::MainWindow(QObject *parent) :
     QObject(parent),
@@ -12,7 +12,7 @@ MainWindow::MainWindow(QObject *parent) :
 {
     connect(fetcher, SIGNAL(loadingDone()), this, SLOT(displayRoutes()));
 
-    engine = new QQmlApplicationEngine;
+    engine = new QQmlApplicationEngine(this);
     QQmlComponent component(engine, QUrl(QStringLiteral("qrc:///main.qml")));
     rootObject = component.create();
 
@@ -20,18 +20,20 @@ MainWindow::MainWindow(QObject *parent) :
 }
 
 void MainWindow::displayRoutes() {
-    for (int i = 0; i < fetcher->getRoutes().size(); i++) {
-        Route route = fetcher->getRoutes().at(i);
-        DirectionModel* model = new DirectionModel(this);
-        model->setDirections(route.getDirections().values());
-
-        QMetaObject::invokeMethod(rootObject, "addRouteTab",
-                                  Q_ARG(QVariant, route.getRouteName()),
-                                  Q_ARG(QVariant, route.getTag()),
-                                  Q_ARG(QVariant, QVariant::fromValue(model)));
-    }
+    RouteModel* model = new RouteModel(this);
+    model->setRoutes(fetcher->getRoutes());
+    engine->rootContext()->setContextProperty("routesModel", model);
+    rootObject->findChild<QObject*>("routesComboBox")->setProperty("enabled", true);
 }
 
-void MainWindow::displayStops(QString routeTag, QString directionTag) {
-    qDebug() << routeTag + " " + directionTag;
+void MainWindow::displayDirections(int routeIndex) {
+    DirectionModel* model = new DirectionModel(this);
+    Route route = fetcher->getRoutes().at(routeIndex);
+    model->setDirections(route.getDirections().values());
+    engine->rootContext()->setContextProperty("directionsModel", model);
+    rootObject->findChild<QObject*>("directionsComboBox")->setProperty("enabled", true);
+}
+
+void MainWindow::displayStops(int routeIndex, int directionsIndex) {
+    qDebug() << routeIndex + " " + directionsIndex;
 }

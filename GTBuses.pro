@@ -9,7 +9,8 @@ SOURCES += main.cpp \
     directionmodel.cpp \
     mainwindow.cpp \
     gtwikibusfetcher.cpp \
-    routemodel.cpp
+    routemodel.cpp \
+    stopmodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -26,4 +27,5 @@ HEADERS += \
     directionmodel.h \
     mainwindow.h \
     gtwikibusfetcher.h \
-    routemodel.h
+    routemodel.h \
+    stopmodel.h

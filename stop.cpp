@@ -7,6 +7,7 @@ public:
     QString tag;
     double latitude;
     double longitude;
+    QList<int> waitTimes;
 };
 
 Stop::Stop() : data(new StopData)
@@ -33,20 +34,28 @@ double Stop::getLongitude() const {
     return data->longitude;
 }
 
+QList<int>& Stop::getStopTimes() {
+    return data->waitTimes;
+}
+
 void Stop::setStopName(QString stopName) {
     data->stopName = stopName;
+    emit stopNameChanged();
 }
 
 void Stop::setTag(QString tag) {
     data->tag = tag;
+    emit tagChanged();
 }
 
 void Stop::setLatitude(double latitude) {
     data->latitude = latitude;
+    emit latitudeChanged();
 }
 
 void Stop::setLongitude(double longitude) {
     data->longitude = longitude;
+    emit longitudeChanged();
 }
 
 Stop &Stop::operator=(const Stop &rhs)

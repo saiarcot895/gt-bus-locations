@@ -24,7 +24,7 @@ QString Direction::getTag() const {
     return data->tag;
 }
 
-QList<Stop> Direction::getStops() const {
+QList<Stop>& Direction::getStops() {
     return data->stops;
 }
 
@@ -34,10 +34,6 @@ void Direction::setDirectionName(QString directionName) {
 
 void Direction::setTag(QString tag) {
     data->tag = tag;
-}
-
-void Direction::setStops(QList<Stop> stops) {
-    data->stops = stops;
 }
 
 Direction &Direction::operator=(const Direction &rhs)

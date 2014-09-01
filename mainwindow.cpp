@@ -5,6 +5,8 @@
 #include <QDebug>
 
 #include "routemodel.h"
+#include "directionmodel.h"
+#include "stopmodel.h"
 
 MainWindow::MainWindow(QObject *parent) :
     QObject(parent),
@@ -29,11 +31,30 @@ void MainWindow::displayRoutes() {
 void MainWindow::displayDirections(int routeIndex) {
     DirectionModel* model = new DirectionModel(this);
     Route route = fetcher->getRoutes().at(routeIndex);
-    model->setDirections(route.getDirections().values());
+    availableDirections = route.getDirections().values();
+    model->setDirections(availableDirections);
     engine->rootContext()->setContextProperty("directionsModel", model);
     rootObject->findChild<QObject*>("directionsComboBox")->setProperty("enabled", true);
 }
 
-void MainWindow::displayStops(int routeIndex, int directionsIndex) {
-    qDebug() << routeIndex + " " + directionsIndex;
+void MainWindow::displayStops(int directionsIndex) {
+    StopModel* model = new StopModel(this);
+    Direction direction = availableDirections.at(directionsIndex);
+    availableStops = direction.getStops();
+    model->setStops(availableStops);
+    engine->rootContext()->setContextProperty("stopsModel", model);
+    rootObject->findChild<QObject*>("stopsComboBox")->setProperty("enabled", true);
+}
+
+void MainWindow::displayStopTimes(int stopIndex) {
+    Stop stop = availableStops.at(stopIndex);
+    for (int i = 0; i < 3; i++) {
+        QObject* timeLabel = rootObject->findChild<QObject*>(QStringLiteral("stopTime%1").arg(i));
+        if (stop.getStopTimes().size() > i) {
+            timeLabel->setProperty("text", QStringLiteral("%1 seconds").arg(stop.getStopTimes().at(i)));
+        } else {
+            timeLabel->setProperty("text", "No prediction");
+        }
+    }
+    rootObject->findChild<QObject*>("stopTimesRectangle")->setProperty("visible", true);
 }

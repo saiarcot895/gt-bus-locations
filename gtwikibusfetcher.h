@@ -1,11 +1,12 @@
 #ifndef GTWIKIBUSFETCHER_H
 #define GTWIKIBUSFETCHER_H
 
-#include "route.h";
+#include "route.h"
 
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QTimer>
 
 class GTWikiBusFetcher : public QObject
 {
@@ -17,13 +18,18 @@ public:
 
 signals:
     void loadingDone();
+    void waitTimesUpdated(QString routeTag);
 
 public slots:
     void readRouteConfig();
+    void refreshWaitTimes();
+    void readWaitTimes(QNetworkReply* reply);
 
 private:
     QNetworkAccessManager* manager;
     QNetworkReply* routeConfigReply;
+    QTimer* timer;
+
     QList<Route> routes;
 
 };

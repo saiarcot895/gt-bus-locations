@@ -5,7 +5,8 @@
 
 GTWikiBusFetcher::GTWikiBusFetcher(QObject *parent) :
     QObject(parent),
-    manager(new QNetworkAccessManager(this))
+    manager(new QNetworkAccessManager(this)),
+    timer(new QTimer(this))
 {
     routeConfigReply = manager->get(QNetworkRequest(
                                         QUrl("http://gtwiki.info/nextbus/nextbus.php?a=georgia-tech&command=routeConfig")));
@@ -46,9 +47,9 @@ void GTWikiBusFetcher::readRouteConfig() {
                     stop.setLongitude(reader.attributes().value("lon").toDouble());
                     route.getStops().insert(stop.getTag(), stop);
                 } else {
-                    direction.getStops().append(
-                                route.getStops().value(
-                                    reader.attributes().value("tag").toString()));
+                    QString tag = reader.attributes().value("tag").toString();
+                    Stop stop = route.getStops().value(tag);
+                    direction.getStops().append(stop);
                 }
             } else if (reader.name() == QStringLiteral("direction")) {
                 direction = Direction();
@@ -60,6 +61,7 @@ void GTWikiBusFetcher::readRouteConfig() {
         case QXmlStreamReader::EndElement:
             if (reader.name() == QStringLiteral("direction")) {
                 route.getDirections().insert(direction.getTag(), direction);
+                settingDirection = false;
             } else if (reader.name() == QStringLiteral("route")) {
                 routes.append(route);
             }
@@ -70,6 +72,71 @@ void GTWikiBusFetcher::readRouteConfig() {
     }
 
     emit loadingDone();
+
+    disconnect(routeConfigReply, SIGNAL(finished()), this, SLOT(readRouteConfig()));
+    disconnect(routeConfigReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(readRouteConfig()));
+
+    connect(timer, SIGNAL(timeout()), this, SLOT(refreshWaitTimes()));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(readWaitTimes(QNetworkReply*)));
+    timer->start(30000);
+}
+
+void GTWikiBusFetcher::refreshWaitTimes() {
+    for (int i = 0; i < routes.size(); i++) {
+        Route route = routes.at(i);
+        manager->get(QNetworkRequest(QUrl(QStringLiteral("http://gtwiki.info/nextbus/nextbus.php?"
+                                                         "a=georgia-tech&command=predictionsForMultiStops&r=%1").arg(route.getTag()))));
+    }
+}
+
+void GTWikiBusFetcher::readWaitTimes(QNetworkReply *reply) {
+    if (reply->error() != QNetworkReply::NoError) {
+        qCritical() << "Error occurred: " + reply->errorString();
+        return;
+    }
+
+    QXmlStreamReader reader(reply->readAll());
+    if (reader.hasError()) {
+        qCritical() << "Error parsing stop prediction XML: " + reader.errorString();
+        return;
+    }
+
+    QString routeTag;
+    QString stopTag;
+    Stop stop;
+
+    while (!reader.atEnd()) {
+        switch (reader.readNext()) {
+        case QXmlStreamReader::StartElement:
+            if (reader.name() == QStringLiteral("predictions")) {
+                routeTag = reader.attributes().value("routeTag").toString();
+                stopTag = reader.attributes().value("stopTag").toString();
+
+                for (int i = 0; i < routes.size(); i++) {
+                    Route route = routes.at(i);
+                    if (route.getTag() != routeTag) {
+                        continue;
+                    }
+
+                    QList<Stop> stops = route.getStops().values();
+                    for (int j = 0; j < stops.size(); j++) {
+                        Stop routeStop = stops.at(j);
+                        if (routeStop.getTag() == stopTag) {
+                            stop = routeStop;
+                            break;
+                        }
+                    }
+                }
+            } else if (reader.name() == QStringLiteral("prediction")) {
+                stop.getStopTimes().append(reader.attributes().value("seconds").toInt());
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    emit waitTimesUpdated(routeTag);
 }
 
 QList<Route> GTWikiBusFetcher::getRoutes() const {

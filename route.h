@@ -26,8 +26,6 @@ public:
 
     void setRouteName(QString routeName);
     void setTag(QString tag);
-    void setDirections(QHash<QString, Direction> directions);
-    void setStops(QHash<QString, Stop> stops);
     void setColor(QColor color);
 
 private:

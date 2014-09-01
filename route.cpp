@@ -46,14 +46,6 @@ void Route::setTag(QString tag) {
     data->tag = tag;
 }
 
-void Route::setDirections(QHash<QString, Direction> directions) {
-    data->directions = directions;
-}
-
-void Route::setStops(QHash<QString, Stop> stops) {
-    data->stops = stops;
-}
-
 void Route::setColor(QColor color) {
     data->color = color;
 }

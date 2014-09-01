@@ -66,6 +66,7 @@ ApplicationWindow {
         anchors.leftMargin: 6
         model: directionsModel
         textRole: "name"
+        onCurrentTextChanged: mainWindow.displayStops(currentIndex)
     }
 
     Label {
@@ -78,11 +79,63 @@ ApplicationWindow {
 
     ComboBox {
         id: comboBox3
+        objectName: "stopsComboBox"
         enabled: false
         anchors.top: comboBox2.bottom
         anchors.topMargin: 6
         anchors.left: label3.right
         anchors.leftMargin: 6
         model: stopsModel
+        textRole: "name"
+        onCurrentTextChanged: mainWindow.displayStopTimes(currentIndex)
+    }
+
+    Button {
+        id: button1
+        text: qsTr("Map")
+        anchors.right: parent.right
+        anchors.rightMargin: 8
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 8
+    }
+
+    Rectangle {
+        id: rectangle1
+        objectName: "stopTimesRectangle"
+        color: "#00000000"
+        visible: false
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+
+        Label {
+            id: label4
+            objectName: "stopTime0"
+            text: qsTr("Label")
+            anchors.top: parent.top
+            anchors.topMargin: 8
+            anchors.left: parent.left
+            anchors.leftMargin: 8
+        }
+
+        Label {
+            id: label5
+            objectName: "stopTime1"
+            text: qsTr("Label")
+            anchors.left: parent.left
+            anchors.leftMargin: 8
+            anchors.top: label4.bottom
+            anchors.topMargin: 8
+        }
+
+        Label {
+            id: label6
+            objectName: "stopTime2"
+            text: qsTr("Label")
+            anchors.left: parent.left
+            anchors.leftMargin: 8
+            anchors.top: label5.bottom
+            anchors.topMargin: 8
+        }
     }
 }

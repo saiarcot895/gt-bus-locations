@@ -18,11 +18,10 @@ public:
 
     QString getDirectionName() const;
     QString getTag() const;
-    QList<Stop> getStops() const;
+    QList<Stop>& getStops();
 
     void setDirectionName(QString directionName);
     void setTag(QString tag);
-    void setStops(QList<Stop> stops);
 
 private:
     QSharedDataPointer<DirectionData> data;

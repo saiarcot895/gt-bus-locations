@@ -3,8 +3,9 @@
 
 #include <QObject>
 #include <QQmlApplicationEngine>
-#include "directionmodel.h"
 #include "gtwikibusfetcher.h"
+
+#include "route.h"
 
 class MainWindow : public QObject
 {
@@ -13,7 +14,10 @@ public:
     explicit MainWindow(QObject *parent = 0);
 
     Q_INVOKABLE void displayDirections(int routeIndex);
-    Q_INVOKABLE void displayStops(int routeIndex, int directionsIndex);
+    Q_INVOKABLE void displayStops(int directionsIndex);
+
+public slots:
+    Q_INVOKABLE void displayStopTimes(int stopIndex);
 
 private slots:
     void displayRoutes();
@@ -21,8 +25,10 @@ private slots:
 private:
     QQmlApplicationEngine* engine;
     QObject* rootObject;
-
     GTWikiBusFetcher* fetcher;
+
+    QList<Direction> availableDirections;
+    QList<Stop> availableStops;
 
 };
 

@@ -78,6 +78,9 @@ void GTWikiBusFetcher::readRouteConfig() {
 
     connect(timer, SIGNAL(timeout()), this, SLOT(refreshWaitTimes()));
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(readWaitTimes(QNetworkReply*)));
+
+    refreshWaitTimes();
+
     timer->start(30000);
 }
 

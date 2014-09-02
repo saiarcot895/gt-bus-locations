@@ -92,6 +92,7 @@ ApplicationWindow {
 
     Button {
         id: button1
+        visible: false
         text: qsTr("Map")
         anchors.right: parent.right
         anchors.rightMargin: 8

@@ -2,7 +2,7 @@
 #define ROUTE_H
 
 #include <QObject>
-#include <QSharedDataPointer>
+#include <QExplicitlySharedDataPointer>
 #include <QHash>
 #include <QColor>
 #include "direction.h"
@@ -29,7 +29,7 @@ public:
     void setColor(QColor color);
 
 private:
-    QSharedDataPointer<RouteData> data;
+    QExplicitlySharedDataPointer<RouteData> data;
 };
 
 #endif // ROUTE_H

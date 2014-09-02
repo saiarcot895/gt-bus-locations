@@ -2,7 +2,7 @@
 #define DIRECTION_H
 
 #include <QObject>
-#include <QSharedDataPointer>
+#include <QExplicitlySharedDataPointer>
 #include <QList>
 #include "stop.h"
 
@@ -24,7 +24,7 @@ public:
     void setTag(QString tag);
 
 private:
-    QSharedDataPointer<DirectionData> data;
+    QExplicitlySharedDataPointer<DirectionData> data;
 };
 
 #endif // DIRECTION_H

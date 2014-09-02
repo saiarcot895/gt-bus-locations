@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include <QSharedDataPointer>
+#include <QExplicitlySharedDataPointer>
 
 class StopData;
 
@@ -39,7 +39,7 @@ signals:
     void longitudeChanged();
 
 private:
-    QSharedDataPointer<StopData> data;
+    QExplicitlySharedDataPointer<StopData> data;
 };
 
 #endif // STOP_H

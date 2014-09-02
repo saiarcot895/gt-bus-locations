@@ -130,6 +130,8 @@ void GTWikiBusFetcher::readWaitTimes(QNetworkReply *reply) {
                         }
                     }
                 }
+
+                stop.getStopTimes().clear();
             } else if (reader.name() == QStringLiteral("prediction")) {
                 stop.getStopTimes().append(reader.attributes().value("seconds").toInt());
             }

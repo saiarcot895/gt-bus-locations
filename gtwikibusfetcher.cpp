@@ -81,7 +81,7 @@ void GTWikiBusFetcher::readRouteConfig() {
 
     refreshWaitTimes();
 
-    timer->start(30000);
+    timer->start(15000);
 }
 
 void GTWikiBusFetcher::refreshWaitTimes() {

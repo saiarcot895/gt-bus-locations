@@ -45,7 +45,10 @@ ApplicationWindow {
         anchors.topMargin: 8
         model: routesModel
         textRole: "name"
-        onCurrentTextChanged: mainWindow.displayDirections(currentIndex)
+        onCurrentTextChanged: {
+            mainWindow.displayDirections(currentIndex);
+            mainWindow.displayStops(0);
+        }
     }
 
     Label {

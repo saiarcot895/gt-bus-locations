@@ -7,6 +7,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QTimer>
+#include <geos/geom/GeometryFactory.h>
 
 class GTWikiBusFetcher : public QObject
 {
@@ -29,6 +30,7 @@ private:
     QNetworkAccessManager* manager;
     QNetworkReply* routeConfigReply;
     QTimer* timer;
+    geos::geom::GeometryFactory* factory;
 
     QList<Route> routes;
 

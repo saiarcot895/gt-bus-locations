@@ -3,10 +3,18 @@
 #include <QXmlStreamReader>
 #include <QDebug>
 
+#include <geos/geom/Geometry.h>
+#include <geos/geom/GeometryFactory.h>
+#include <geos/geom/PrecisionModel.h>
+#include <geos/geom/CoordinateSequenceFactory.h>
+#include <geos/geom/LineString.h>
+#include <geos/operation/linemerge/LineSequencer.h>
+
 GTWikiBusFetcher::GTWikiBusFetcher(QObject *parent) :
     QObject(parent),
     manager(new QNetworkAccessManager(this)),
-    timer(new QTimer(this))
+    timer(new QTimer(this)),
+    factory(new geos::geom::GeometryFactory(new geos::geom::PrecisionModel(), 4326))
 {
     routeConfigReply = manager->get(QNetworkRequest(
                                         QUrl("http://gtwiki.info/nextbus/nextbus.php?a=georgia-tech&command=routeConfig")));
@@ -29,6 +37,9 @@ void GTWikiBusFetcher::readRouteConfig() {
     Route route;
     Direction direction;
     bool settingDirection = false;
+    const geos::geom::CoordinateSequenceFactory* sequenceFactory = factory->getCoordinateSequenceFactory();
+    QList<geos::geom::Coordinate> coordinates;
+    QList< QSharedPointer<geos::geom::CoordinateSequence> > paths;
 
     while (!reader.atEnd()) {
         switch (reader.readNext()) {
@@ -56,6 +67,11 @@ void GTWikiBusFetcher::readRouteConfig() {
                 direction.setDirectionName(reader.attributes().value("title").toString());
                 direction.setTag(reader.attributes().value("tag").toString());
                 settingDirection = true;
+            } else if (reader.name() == QStringLiteral("point")) {
+                geos::geom::Coordinate coordinate;
+                coordinate.x = reader.attributes().value("lon").toDouble();
+                coordinate.y = reader.attributes().value("lat").toDouble();
+                coordinates.append(coordinate);
             }
             break;
         case QXmlStreamReader::EndElement:
@@ -63,7 +79,41 @@ void GTWikiBusFetcher::readRouteConfig() {
                 route.getDirections().insert(direction.getTag(), direction);
                 settingDirection = false;
             } else if (reader.name() == QStringLiteral("route")) {
+                bool changesMade = true;
+                while (paths.size() > 1 && changesMade) {
+                    changesMade = false;
+                    for (int i = 0; i < paths.size(); i++) {
+                        QSharedPointer<geos::geom::CoordinateSequence> path1 = paths.at(i);
+                        for (int j = i + 1; j < paths.size(); j++) {
+                            QSharedPointer<geos::geom::CoordinateSequence> path2 = paths.at(j);
+                            if (path1->front().equals2D(path2->back())) {
+                                for (int k = path2->size() - 1; k >= 0; k--) {
+                                    path1->add(0, path2->getAt(k), false);
+                                }
+                                paths.removeAt(j);
+                                j--;
+                                changesMade = true;
+                            } else if (path1->back().equals2D(path2->front())) {
+                                for (int k = 0; k < path2->size(); k++) {
+                                    path1->add(path2->getAt(k), false);
+                                }
+                                paths.removeAt(j);
+                                j--;
+                                changesMade = true;
+                            }
+                        }
+                    }
+                }
+                Q_ASSERT(paths.size() == 1);
                 routes.append(route);
+            } else if (reader.name() == QStringLiteral("path")) {
+                QSharedPointer<geos::geom::CoordinateSequence> sequence(sequenceFactory->create(
+                            (std::vector<geos::geom::Coordinate>*) NULL, 2));
+                for (int i = 0; i < coordinates.size(); i++) {
+                    sequence->add(coordinates.at(i));
+                }
+                paths.append(sequence);
+                coordinates.clear();
             }
             break;
         default:

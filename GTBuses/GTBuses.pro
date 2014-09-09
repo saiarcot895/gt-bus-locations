@@ -35,6 +35,7 @@ HEADERS += \
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../geos/release/ -lgeos
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../geos/debug/ -lgeos
 else:unix: LIBS += -L$$OUT_PWD/../geos/ -lgeos
+ANDROID_EXTRA_LIBS += $$OUT_PWD/../geos/libgeos.so
 
-INCLUDEPATH += $$PWD/../geos
-DEPENDPATH += $$PWD/../geos
+INCLUDEPATH += $$PWD/../geos/include
+DEPENDPATH += $$PWD/../geos/include

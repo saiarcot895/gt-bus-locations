@@ -54,8 +54,14 @@ void GTWikiBusFetcher::readRouteConfig() {
                     Stop stop;
                     stop.setStopName(reader.attributes().value("title").toString());
                     stop.setTag(reader.attributes().value("tag").toString());
-                    stop.setLatitude(reader.attributes().value("lat").toDouble());
-                    stop.setLongitude(reader.attributes().value("lon").toDouble());
+
+                    geos::geom::Coordinate coordinate;
+                    coordinate.x = reader.attributes().value("lon").toDouble();
+                    coordinate.y = reader.attributes().value("lat").toDouble();
+                    coordinates.append(coordinate);
+                    QSharedPointer<geos::geom::Point> point(factory->createPoint(coordinate));
+                    stop.setCoordinate(point);
+
                     route.getStops().insert(stop.getTag(), stop);
                 } else {
                     QString tag = reader.attributes().value("tag").toString();
@@ -105,6 +111,7 @@ void GTWikiBusFetcher::readRouteConfig() {
                     }
                 }
                 Q_ASSERT(paths.size() == 1);
+
                 routes.append(route);
             } else if (reader.name() == QStringLiteral("path")) {
                 QSharedPointer<geos::geom::CoordinateSequence> sequence(sequenceFactory->create(

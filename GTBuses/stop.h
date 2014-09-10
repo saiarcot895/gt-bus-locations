@@ -2,8 +2,9 @@
 #define STOP_H
 
 #include <QObject>
-
 #include <QExplicitlySharedDataPointer>
+#include <QSharedPointer>
+#include <geos/geom/Point.h>
 
 class StopData;
 
@@ -18,25 +19,21 @@ public:
 
     Q_PROPERTY(QString stopName READ getStopName WRITE setStopName NOTIFY stopNameChanged)
     Q_PROPERTY(QString tag READ getTag WRITE setTag NOTIFY tagChanged)
-    Q_PROPERTY(double latitude READ getLatitude WRITE setLatitude NOTIFY latitudeChanged)
-    Q_PROPERTY(double longitude READ getLongitude WRITE setLongitude NOTIFY longitudeChanged)
+    Q_PROPERTY(QSharedPointer<geos::geom::Point> coordinate READ getCoordinate WRITE setCoordinate NOTIFY coordinateChanged)
 
     QString getStopName() const;
     QString getTag() const;
-    double getLatitude() const;
-    double getLongitude() const;
+    QSharedPointer<geos::geom::Point> getCoordinate() const;
     QList<int>& getStopTimes();
 
     void setStopName(QString stopName);
     void setTag(QString tag);
-    void setLatitude(double latitude);
-    void setLongitude(double longitude);
+    void setCoordinate(QSharedPointer<geos::geom::Point> coordinate);
 
 signals:
     void stopNameChanged();
     void tagChanged();
-    void latitudeChanged();
-    void longitudeChanged();
+    void coordinateChanged();
 
 private:
     QExplicitlySharedDataPointer<StopData> data;

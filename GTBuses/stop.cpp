@@ -5,8 +5,7 @@ class StopData : public QSharedData {
 public:
     QString stopName;
     QString tag;
-    double latitude;
-    double longitude;
+    QSharedPointer<geos::geom::Point> coordinate;
     QList<int> waitTimes;
 };
 
@@ -26,12 +25,8 @@ QString Stop::getTag() const {
     return data->tag;
 }
 
-double Stop::getLatitude() const {
-    return data->latitude;
-}
-
-double Stop::getLongitude() const {
-    return data->longitude;
+QSharedPointer<geos::geom::Point> Stop::getCoordinate() const {
+    return data->coordinate;
 }
 
 QList<int>& Stop::getStopTimes() {
@@ -48,14 +43,9 @@ void Stop::setTag(QString tag) {
     emit tagChanged();
 }
 
-void Stop::setLatitude(double latitude) {
-    data->latitude = latitude;
-    emit latitudeChanged();
-}
-
-void Stop::setLongitude(double longitude) {
-    data->longitude = longitude;
-    emit longitudeChanged();
+void Stop::setCoordinate(QSharedPointer<geos::geom::Point> coordinate) {
+    data->coordinate = coordinate;
+    emit coordinateChanged();
 }
 
 Stop &Stop::operator=(const Stop &rhs)

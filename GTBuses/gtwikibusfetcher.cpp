@@ -9,6 +9,7 @@
 #include <geos/geom/CoordinateSequenceFactory.h>
 #include <geos/geom/LineString.h>
 #include <geos/operation/linemerge/LineSequencer.h>
+#include <geos/operation/distance/DistanceOp.h>
 
 GTWikiBusFetcher::GTWikiBusFetcher(QObject *parent) :
     QObject(parent),
@@ -58,7 +59,7 @@ void GTWikiBusFetcher::readRouteConfig() {
                     geos::geom::Coordinate coordinate;
                     coordinate.x = reader.attributes().value("lon").toDouble();
                     coordinate.y = reader.attributes().value("lat").toDouble();
-                    coordinates.append(coordinate);
+
                     QSharedPointer<geos::geom::Point> point(factory->createPoint(coordinate));
                     stop.setCoordinate(point);
 
@@ -92,17 +93,21 @@ void GTWikiBusFetcher::readRouteConfig() {
                         QSharedPointer<geos::geom::CoordinateSequence> path1 = paths.at(i);
                         for (int j = i + 1; j < paths.size(); j++) {
                             QSharedPointer<geos::geom::CoordinateSequence> path2 = paths.at(j);
-                            if (path1->front().equals2D(path2->back())) {
+                            if ((path1->front().x - path2->back().x) / path1->front().x <= 0.0001
+                                    && (path1->front().y - path2->back().y) / path1->front().y <= 0.0001) {
                                 for (int k = path2->size() - 1; k >= 0; k--) {
                                     path1->add(0, path2->getAt(k), false);
                                 }
+
                                 paths.removeAt(j);
                                 j--;
                                 changesMade = true;
-                            } else if (path1->back().equals2D(path2->front())) {
+                            } else if ((path1->back().x - path2->front().x) / path1->back().x <= 0.0001
+                                       && (path1->back().y - path2->front().y) / path1->back().y <= 0.0001) {
                                 for (int k = 0; k < path2->size(); k++) {
                                     path1->add(path2->getAt(k), false);
                                 }
+
                                 paths.removeAt(j);
                                 j--;
                                 changesMade = true;
@@ -111,6 +116,18 @@ void GTWikiBusFetcher::readRouteConfig() {
                     }
                 }
                 Q_ASSERT(paths.size() == 1);
+
+                QSharedPointer<geos::geom::LineString> busPath(factory->createLineString(paths.first().data()));
+
+                QList<Stop> stops = route.getStops().values();
+                for (int i = 0; i < stops.size(); i++) {
+                    Stop stop = stops.at(i);
+
+                    geos::geom::Coordinate nearestCoordinate = geos::operation::distance
+                            ::DistanceOp::nearestPoints(busPath.data(), stop.getCoordinate().data())->getAt(0);
+
+
+                }
 
                 routes.append(route);
             } else if (reader.name() == QStringLiteral("path")) {

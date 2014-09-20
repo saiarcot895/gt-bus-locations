@@ -40,7 +40,7 @@ void GTWikiBusFetcher::readRouteConfig() {
     bool settingDirection = false;
     const geos::geom::CoordinateSequenceFactory* sequenceFactory = factory->getCoordinateSequenceFactory();
     QList<geos::geom::Coordinate> coordinates;
-    QList< QSharedPointer<geos::geom::CoordinateSequence> > paths;
+    QList<geos::geom::CoordinateSequence*> paths;
 
     while (!reader.atEnd()) {
         switch (reader.readNext()) {
@@ -87,27 +87,40 @@ void GTWikiBusFetcher::readRouteConfig() {
                 settingDirection = false;
             } else if (reader.name() == QStringLiteral("route")) {
                 bool changesMade = true;
+
+                if (route.getTag() == "green") {
+                    paths.clear();
+                    routes.append(route);
+                    continue;
+                }
+
+                double accuracy = 1e-6;
+
                 while (paths.size() > 1 && changesMade) {
                     changesMade = false;
                     for (int i = 0; i < paths.size(); i++) {
-                        QSharedPointer<geos::geom::CoordinateSequence> path1 = paths.at(i);
+                        geos::geom::CoordinateSequence* path1 = paths.at(i);
                         for (int j = i + 1; j < paths.size(); j++) {
-                            QSharedPointer<geos::geom::CoordinateSequence> path2 = paths.at(j);
-                            if ((path1->front().x - path2->back().x) / path1->front().x <= 0.0001
-                                    && (path1->front().y - path2->back().y) / path1->front().y <= 0.0001) {
+                            geos::geom::CoordinateSequence* path2 = paths.at(j);
+                            if (qAbs((path1->front().x - path2->back().x) / path1->front().x) <= accuracy
+                                    && qAbs((path1->front().y - path2->back().y) / path1->front().y) <= accuracy) {
+
                                 for (int k = path2->size() - 1; k >= 0; k--) {
                                     path1->add(0, path2->getAt(k), false);
                                 }
 
+                                delete path2;
                                 paths.removeAt(j);
                                 j--;
                                 changesMade = true;
-                            } else if ((path1->back().x - path2->front().x) / path1->back().x <= 0.0001
-                                       && (path1->back().y - path2->front().y) / path1->back().y <= 0.0001) {
+                            } else if (qAbs((path1->back().x - path2->front().x) / path1->back().x) <= accuracy
+                                       && qAbs((path1->back().y - path2->front().y) / path1->back().y) <= accuracy) {
+
                                 for (int k = 0; k < path2->size(); k++) {
                                     path1->add(path2->getAt(k), false);
                                 }
 
+                                delete path2;
                                 paths.removeAt(j);
                                 j--;
                                 changesMade = true;
@@ -115,24 +128,79 @@ void GTWikiBusFetcher::readRouteConfig() {
                         }
                     }
                 }
+
+                for (int i = 0; i < paths.size(); i++) {
+                    geos::geom::CoordinateSequence* path = paths.at(i);
+                    if (path->size() <= 3 || path->size() == 19 /* GLC/Clough */) {
+                        paths.removeAt(i);
+                        i--;
+                        delete path;
+                    }
+                }
+
                 Q_ASSERT(paths.size() == 1);
 
-                QSharedPointer<geos::geom::LineString> busPath(factory->createLineString(paths.first().data()));
+                QSharedPointer<geos::geom::LineString> busPath(factory->createLineString(paths.first()));
 
-                QList<Stop> stops = route.getStops().values();
-                for (int i = 0; i < stops.size(); i++) {
+                QList<Stop> stops;
+
+                for (int i = 0; i < route.getDirections().values().size(); i++) {
+                    Direction direction = route.getDirections().values().at(i);
+                    stops += direction.getStops();
+                }
+
+                geos::geom::CoordinateSequence* startingCoordinates = geos::operation::distance
+                        ::DistanceOp::nearestPoints(busPath.data(), stops.at(0).getCoordinate().data());
+                int startingIndex = -1;
+                for (int i = 0; i < startingCoordinates->size(); i++) {
+                    geos::geom::Coordinate startingCoordinate = startingCoordinates->getAt(i);
+                    for (int j = 0; j < busPath->getCoordinatesRO()->size(); j++) {
+                        geos::geom::Coordinate stop = busPath->getCoordinateN(j);
+                        if (qAbs((stop.x - startingCoordinate.x) / stop.x) <= accuracy
+                                && qAbs((stop.y - startingCoordinate.y) / stop.y) <= accuracy) {
+                            startingIndex = j;
+                            break;
+                        }
+                    }
+
+                    if (startingIndex != -1) {
+                        break;
+                    }
+                }
+
+                Q_ASSERT(startingIndex != -1);
+
+                int previousIndex = startingIndex;
+                for (int i = 1; i < stops.size(); i++) {
                     Stop stop = stops.at(i);
 
-                    geos::geom::Coordinate nearestCoordinate = geos::operation::distance
-                            ::DistanceOp::nearestPoints(busPath.data(), stop.getCoordinate().data())->getAt(0);
+                    geos::geom::CoordinateSequence* nearestCoordinates = geos::operation::distance
+                            ::DistanceOp::nearestPoints(busPath.data(), stop.getCoordinate().data());
+
+                    geos::geom::CoordinateSequence* sequence =
+                            sequenceFactory->create((std::vector<geos::geom::Coordinate>*) NULL, 2);
+
+                    for (int j = 0; j < nearestCoordinates->size(); j++) {
+                        geos::geom::Coordinate nearestCoordinate = nearestCoordinates->getAt(j);
+                        for (int k = previousIndex + 1; k < busPath->getCoordinatesRO()->size() + previousIndex; k++) {
+                            sequence->add(busPath->getCoordinateN(k % busPath->getCoordinatesRO()->size()));
+                            if (Q_UNLIKELY(busPath->getCoordinateN(k % busPath->getCoordinatesRO()->size()).equals2D(nearestCoordinate))) {
+                                previousIndex = (k + 1) % busPath->getCoordinatesRO()->size();
+                                break;
+                            }
+                        }
+                    }
 
 
+                    QSharedPointer<geos::geom::LineString> stopPath(factory->createLineString(sequence));
                 }
+
+                paths.clear();
 
                 routes.append(route);
             } else if (reader.name() == QStringLiteral("path")) {
-                QSharedPointer<geos::geom::CoordinateSequence> sequence(sequenceFactory->create(
-                            (std::vector<geos::geom::Coordinate>*) NULL, 2));
+                geos::geom::CoordinateSequence* sequence = sequenceFactory->create(
+                            (std::vector<geos::geom::Coordinate>*) NULL, 2);
                 for (int i = 0; i < coordinates.size(); i++) {
                     sequence->add(coordinates.at(i));
                 }

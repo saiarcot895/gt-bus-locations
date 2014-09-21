@@ -10,16 +10,30 @@
 
 MainWindow::MainWindow(QObject *parent) :
     QObject(parent),
-    fetcher(new GTWikiBusFetcher)
+    fetcher(new GTWikiBusFetcher),
+    rootObject(NULL)
 {
     connect(fetcher, SIGNAL(loadingDone()), this, SLOT(displayRoutes()));
     connect(fetcher, SIGNAL(waitTimesUpdated(QString)), this, SLOT(refreshWaitTimes(QString)));
 
     engine = new QQmlApplicationEngine(this);
-    QQmlComponent component(engine, QUrl(QStringLiteral("qrc:///main.qml")));
-    rootObject = component.create();
+    component = new QQmlComponent(engine, QUrl(QStringLiteral("qrc:///main.qml")));
+    if (component->isLoading()) {
+        connect(component, SIGNAL(statusChanged(QQmlComponent::Status)),
+                this, SLOT(continueLoading()));
+    } else {
+        continueLoading();
+    }
+}
 
-    engine->rootContext()->setContextProperty("mainWindow", this);
+void MainWindow::continueLoading() {
+    if (component->isError()) {
+        qWarning() << component->errors();
+    } else {
+        rootObject = component->create();
+        engine->rootContext()->setContextProperty("mainWindow", this);
+    }
+
 }
 
 void MainWindow::displayRoutes() {

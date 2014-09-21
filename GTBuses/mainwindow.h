@@ -22,11 +22,13 @@ public slots:
 private slots:
     void displayRoutes();
     void refreshWaitTimes(QString routeTag);
+    void continueLoading();
 
 private:
     void displayWaitTimes();
 
     QQmlApplicationEngine* engine;
+    QQmlComponent* component;
     QObject* rootObject;
     GTWikiBusFetcher* fetcher;
 

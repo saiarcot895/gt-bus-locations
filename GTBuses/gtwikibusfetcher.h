@@ -28,6 +28,7 @@ public slots:
 
 private:
     void readWaitTimes(QNetworkReply* reply);
+    void readBusPositions(QNetworkReply* reply);
 
     QNetworkAccessManager* manager;
     QNetworkReply* routeConfigReply;

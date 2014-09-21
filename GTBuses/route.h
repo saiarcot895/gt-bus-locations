@@ -9,6 +9,7 @@
 #include "stop.h"
 
 class RouteData;
+class Bus;
 
 class Route : public QObject
 {
@@ -23,6 +24,7 @@ public:
     QHash<QString, Direction>& getDirections();
     QHash<QString, Stop>& getStops();
     QColor getColor() const;
+    QHash<int, Bus>& getBuses();
 
     void setRouteName(QString routeName);
     void setTag(QString tag);

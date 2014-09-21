@@ -11,6 +11,8 @@
 #include <geos/operation/linemerge/LineSequencer.h>
 #include <geos/operation/distance/DistanceOp.h>
 
+#include "bus.h"
+
 GTWikiBusFetcher::GTWikiBusFetcher(QObject *parent) :
     QObject(parent),
     manager(new QNetworkAccessManager(this)),
@@ -327,6 +329,57 @@ void GTWikiBusFetcher::readWaitTimes(QNetworkReply *reply) {
     }
 
     emit waitTimesUpdated(routeTag);
+}
+
+void GTWikiBusFetcher::readBusPositions(QNetworkReply *reply) {
+    if (reply->error() != QNetworkReply::NoError) {
+        qCritical() << "Error occurred: " + reply->errorString();
+        return;
+    }
+
+    QXmlStreamReader reader(reply->readAll());
+    if (reader.hasError()) {
+        qCritical() << "Error parsing stop prediction XML: " + reader.errorString();
+        return;
+    }
+
+    QString routeTag;
+    Route route;
+
+    while (!reader.atEnd()) {
+        switch (reader.readNext()) {
+        case QXmlStreamReader::StartElement:
+            if (reader.name() == QStringLiteral("vehicle")) {
+                routeTag = reader.attributes().value("routeTag").toString();
+                int busId = reader.attributes().value("id").toInt();
+                double lat = reader.attributes().value("lat").toDouble();
+                double lon = reader.attributes().value("lon").toDouble();
+
+                for (int i = 0; i < routes.size(); i++) {
+                    Route possibleRoute = routes.at(i);
+                    if (possibleRoute.getTag() != routeTag) {
+                        route = possibleRoute;
+                        continue;
+                    }
+                }
+
+                Bus bus = route.getBuses().value(busId, Bus());
+                bus.setRoute(route);
+
+                geos::geom::Coordinate coordinate;
+                coordinate.x = reader.attributes().value("lon").toDouble();
+                coordinate.y = reader.attributes().value("lat").toDouble();
+
+                QSharedPointer<geos::geom::Point> point(factory->createPoint(coordinate));
+                bus.setLocation(point);
+
+                route.getBuses().insert(busId, bus);
+            }
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 QList<Route> GTWikiBusFetcher::getRoutes() const {

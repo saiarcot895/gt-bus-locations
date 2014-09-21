@@ -1,5 +1,6 @@
 #include "route.h"
 #include <QSharedData>
+#include "bus.h"
 
 class RouteData : public QSharedData {
 public:
@@ -8,6 +9,7 @@ public:
     QHash<QString, Direction> directions;
     QHash<QString, Stop> stops;
     QColor color;
+    QHash<int, Bus> buses;
 };
 
 Route::Route() : data(new RouteData)
@@ -36,6 +38,10 @@ QHash<QString, Stop>& Route::getStops() {
 
 QColor Route::getColor() const {
     return data->color;
+}
+
+QHash<int, Bus>& Route::getBuses() {
+    return data->buses;
 }
 
 void Route::setRouteName(QString routeName) {

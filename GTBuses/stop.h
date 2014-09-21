@@ -5,6 +5,7 @@
 #include <QExplicitlySharedDataPointer>
 #include <QSharedPointer>
 #include <geos/geom/Point.h>
+#include <geos/geom/LineString.h>
 
 class StopData;
 
@@ -25,10 +26,14 @@ public:
     QString getTag() const;
     QSharedPointer<geos::geom::Point> getCoordinate() const;
     QList<int>& getStopTimes();
+    QSharedPointer<geos::geom::LineString> getArrivingSegment() const;
+    QSharedPointer<geos::geom::LineString> getDepartingSegment() const;
 
     void setStopName(QString stopName);
     void setTag(QString tag);
     void setCoordinate(QSharedPointer<geos::geom::Point> coordinate);
+    void setArrivingSegment(QSharedPointer<geos::geom::LineString> arrivingSegment);
+    void setDepartingSegment(QSharedPointer<geos::geom::LineString> departingSegment);
 
 signals:
     void stopNameChanged();

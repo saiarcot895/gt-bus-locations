@@ -23,16 +23,20 @@ signals:
 
 public slots:
     void readRouteConfig();
-    void refreshWaitTimes();
-    void readWaitTimes(QNetworkReply* reply);
+    void updateInfo();
+    void distributeInfo(QNetworkReply* reply);
 
 private:
+    void readWaitTimes(QNetworkReply* reply);
+
     QNetworkAccessManager* manager;
     QNetworkReply* routeConfigReply;
     QTimer* timer;
     geos::geom::GeometryFactory* factory;
 
     QList<Route> routes;
+    QList<QNetworkReply*> waitTimesReplies;
+    QNetworkReply* busPositionReply;
 
 };
 

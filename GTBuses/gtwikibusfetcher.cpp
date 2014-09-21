@@ -96,6 +96,11 @@ void GTWikiBusFetcher::readRouteConfig() {
 
                 double accuracy = 1e-6;
 
+                if (route.getTag() == "emory") {
+                    // The stops for Emory are wide enough that this shouldn't have much of a negative impact
+                    accuracy *= 10;
+                }
+
                 while (paths.size() > 1 && changesMade) {
                     changesMade = false;
                     for (int i = 0; i < paths.size(); i++) {
@@ -156,8 +161,8 @@ void GTWikiBusFetcher::readRouteConfig() {
                     geos::geom::Coordinate startingCoordinate = startingCoordinates->getAt(i);
                     for (int j = 0; j < busPath->getCoordinatesRO()->size(); j++) {
                         geos::geom::Coordinate stop = busPath->getCoordinateN(j);
-                        if (qAbs((stop.x - startingCoordinate.x) / stop.x) <= accuracy
-                                && qAbs((stop.y - startingCoordinate.y) / stop.y) <= accuracy) {
+                        if (qAbs((stop.x - startingCoordinate.x) / stop.x) <= accuracy * 10
+                                && qAbs((stop.y - startingCoordinate.y) / stop.y) <= accuracy * 10) {
                             startingIndex = j;
                             break;
                         }
@@ -167,11 +172,14 @@ void GTWikiBusFetcher::readRouteConfig() {
                         break;
                     }
                 }
+                delete startingCoordinates;
+                startingCoordinates = NULL;
 
                 Q_ASSERT(startingIndex != -1);
 
                 int previousIndex = startingIndex;
                 for (int i = 1; i < stops.size(); i++) {
+                    Stop prevStop = stops.at(i - 1);
                     Stop stop = stops.at(i);
 
                     geos::geom::CoordinateSequence* nearestCoordinates = geos::operation::distance
@@ -181,19 +189,38 @@ void GTWikiBusFetcher::readRouteConfig() {
                             sequenceFactory->create((std::vector<geos::geom::Coordinate>*) NULL, 2);
 
                     for (int j = 0; j < nearestCoordinates->size(); j++) {
-                        geos::geom::Coordinate nearestCoordinate = nearestCoordinates->getAt(j);
+                        const geos::geom::Coordinate nearestCoordinate = nearestCoordinates->getAt(j);
+                        sequence->add(busPath->getCoordinateN(previousIndex));
                         for (int k = previousIndex + 1; k < busPath->getCoordinatesRO()->size() + previousIndex; k++) {
-                            sequence->add(busPath->getCoordinateN(k % busPath->getCoordinatesRO()->size()));
-                            if (Q_UNLIKELY(busPath->getCoordinateN(k % busPath->getCoordinatesRO()->size()).equals2D(nearestCoordinate))) {
-                                previousIndex = (k + 1) % busPath->getCoordinatesRO()->size();
+                            const geos::geom::Coordinate busCoordinate = busPath->getCoordinateN(
+                                        k % busPath->getCoordinatesRO()->size());
+                            sequence->add(busCoordinate);
+                            if (qAbs((busCoordinate.x - nearestCoordinate.x) / busCoordinate.x) <= accuracy * 10
+                                    && qAbs((busCoordinate.y - nearestCoordinate.y) / busCoordinate.y) <= accuracy * 10) {
+                                previousIndex = k % busPath->getCoordinatesRO()->size();
                                 break;
                             }
                         }
-                    }
 
+                        if (sequence->size() > 1 &&
+                                sequence->size() < busPath->getCoordinatesRO()->size() - 1) {
+                            break;
+                        } else {
+                            delete sequence;
+                            sequence = sequenceFactory->create(
+                                        (std::vector<geos::geom::Coordinate>*) NULL, 2);
+                        }
+                    }
+                    delete nearestCoordinates;
+                    nearestCoordinates = NULL;
+
+                    Q_ASSERT(sequence->size() > 1 && sequence->size() < busPath->getCoordinatesRO()->size());
 
                     QSharedPointer<geos::geom::LineString> stopPath(factory->createLineString(sequence));
+                    prevStop.setDepartingSegment(stopPath);
+                    stop.setArrivingSegment(stopPath);
                 }
+                stops.first().setArrivingSegment(stops.last().getDepartingSegment());
 
                 paths.clear();
 
@@ -218,19 +245,35 @@ void GTWikiBusFetcher::readRouteConfig() {
     disconnect(routeConfigReply, SIGNAL(finished()), this, SLOT(readRouteConfig()));
     disconnect(routeConfigReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(readRouteConfig()));
 
-    connect(timer, SIGNAL(timeout()), this, SLOT(refreshWaitTimes()));
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(readWaitTimes(QNetworkReply*)));
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateInfo()));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(distributeInfo(QNetworkReply*)));
 
-    refreshWaitTimes();
+    updateInfo();
 
     timer->start(15000);
 }
 
-void GTWikiBusFetcher::refreshWaitTimes() {
+void GTWikiBusFetcher::updateInfo() {
     for (int i = 0; i < routes.size(); i++) {
         Route route = routes.at(i);
-        manager->get(QNetworkRequest(QUrl(QStringLiteral("http://gtwiki.info/nextbus/nextbus.php?"
+        QNetworkReply* reply = manager->get(QNetworkRequest(QUrl(QStringLiteral("http://gtwiki.info/nextbus/nextbus.php?"
                                                          "a=georgia-tech&command=predictionsForMultiStops&r=%1").arg(route.getTag()))));
+        waitTimesReplies.append(reply);
+    }
+
+    busPositionReply = manager->get(QNetworkRequest(QUrl(QStringLiteral("http://gtwiki.info/nextbus/nextbus.php?"
+                                                     "a=georgia-tech&command=vehicleLocations"))));
+
+}
+
+void GTWikiBusFetcher::distributeInfo(QNetworkReply *reply) {
+    if (busPositionReply == reply) {
+
+    } else if (waitTimesReplies.contains(reply)) {
+        waitTimesReplies.removeOne(reply);
+        readWaitTimes(reply);
+    } else {
+        qWarning() << "Unknown network reply received";
     }
 }
 

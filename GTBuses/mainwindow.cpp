@@ -56,10 +56,13 @@ void MainWindow::displayStopTimes(int stopIndex) {
 void MainWindow::displayWaitTimes() {
     for (int i = 0; i < 3; i++) {
         QObject* timeLabel = rootObject->findChild<QObject*>(QStringLiteral("stopTime%1").arg(i));
+        QObject* busPositionLabel = rootObject->findChild<QObject*>(QStringLiteral("busPosition%1").arg(i));
         if (selectedStop.getStopTimes().size() > i) {
             timeLabel->setProperty("text", QStringLiteral("%1 minutes").arg(selectedStop.getStopTimes().at(i) / 60));
+            busPositionLabel->setProperty("text", "TBA");
         } else {
             timeLabel->setProperty("text", "No prediction");
+            busPositionLabel->setProperty("text", "");
         }
     }
 }

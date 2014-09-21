@@ -7,6 +7,8 @@ public:
     QString tag;
     QSharedPointer<geos::geom::Point> coordinate;
     QList<int> waitTimes;
+    QSharedPointer<geos::geom::LineString> arrivingSegment;
+    QSharedPointer<geos::geom::LineString> departingSegment;
 };
 
 Stop::Stop() : data(new StopData)
@@ -33,6 +35,14 @@ QList<int>& Stop::getStopTimes() {
     return data->waitTimes;
 }
 
+QSharedPointer<geos::geom::LineString> Stop::getArrivingSegment() const {
+    return data->arrivingSegment;
+}
+
+QSharedPointer<geos::geom::LineString> Stop::getDepartingSegment() const {
+    return data->departingSegment;
+}
+
 void Stop::setStopName(QString stopName) {
     data->stopName = stopName;
     emit stopNameChanged();
@@ -46,6 +56,14 @@ void Stop::setTag(QString tag) {
 void Stop::setCoordinate(QSharedPointer<geos::geom::Point> coordinate) {
     data->coordinate = coordinate;
     emit coordinateChanged();
+}
+
+void Stop::setArrivingSegment(QSharedPointer<geos::geom::LineString> arrivingSegment) {
+    data->arrivingSegment = arrivingSegment;
+}
+
+void Stop::setDepartingSegment(QSharedPointer<geos::geom::LineString> departingSegment) {
+    data->departingSegment = departingSegment;
 }
 
 Stop &Stop::operator=(const Stop &rhs)

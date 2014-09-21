@@ -111,11 +111,13 @@ ApplicationWindow {
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: 8
+        anchors.right: parent.right
+        anchors.rightMargin: 8
 
         Label {
             id: label4
             objectName: "stopTime0"
-            text: qsTr("Label")
+            text: "Label"
             anchors.top: parent.top
             anchors.topMargin: 8
             anchors.left: parent.left
@@ -123,9 +125,18 @@ ApplicationWindow {
         }
 
         Label {
+            id: label7
+            objectName: "busPosition0"
+            text: "Label"
+            anchors.verticalCenter: label4.verticalCenter
+            anchors.right: parent.right
+            anchors.rightMargin: 8
+        }
+
+        Label {
             id: label5
             objectName: "stopTime1"
-            text: qsTr("Label")
+            text: "Label"
             anchors.left: parent.left
             anchors.leftMargin: 8
             anchors.top: label4.bottom
@@ -133,13 +144,29 @@ ApplicationWindow {
         }
 
         Label {
+            id: label8
+            objectName: "busPosition1"
+            text: "Label"
+            anchors.verticalCenter: label5.verticalCenter
+            anchors.right: parent.right
+            anchors.rightMargin: 8
+        }
+
+        Label {
             id: label6
             objectName: "stopTime2"
-            text: qsTr("Label")
             anchors.left: parent.left
             anchors.leftMargin: 8
             anchors.top: label5.bottom
             anchors.topMargin: 8
+        }
+
+        Label {
+            id: label9
+            objectName: "busPosition2"
+            anchors.verticalCenter: label6.verticalCenter
+            anchors.right: parent.right
+            anchors.rightMargin: 8
         }
     }
 }

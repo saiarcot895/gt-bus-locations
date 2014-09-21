@@ -6,6 +6,7 @@
 #include <QSharedPointer>
 #include <geos/geom/Point.h>
 #include <geos/geom/LineString.h>
+#include "stopwait.h"
 
 class StopData;
 
@@ -25,7 +26,7 @@ public:
     QString getStopName() const;
     QString getTag() const;
     QSharedPointer<geos::geom::Point> getCoordinate() const;
-    QList<int>& getStopTimes();
+    QList<StopWait>& getStopTimes();
     QSharedPointer<geos::geom::LineString> getArrivingSegment() const;
     QSharedPointer<geos::geom::LineString> getDepartingSegment() const;
 

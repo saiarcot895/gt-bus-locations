@@ -6,7 +6,7 @@ public:
     QString stopName;
     QString tag;
     QSharedPointer<geos::geom::Point> coordinate;
-    QList<int> waitTimes;
+    QList<StopWait> waitTimes;
     QSharedPointer<geos::geom::LineString> arrivingSegment;
     QSharedPointer<geos::geom::LineString> departingSegment;
 };
@@ -31,7 +31,7 @@ QSharedPointer<geos::geom::Point> Stop::getCoordinate() const {
     return data->coordinate;
 }
 
-QList<int>& Stop::getStopTimes() {
+QList<StopWait>& Stop::getStopTimes() {
     return data->waitTimes;
 }
 

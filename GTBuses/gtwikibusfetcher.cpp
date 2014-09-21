@@ -270,7 +270,7 @@ void GTWikiBusFetcher::updateInfo() {
 
 void GTWikiBusFetcher::distributeInfo(QNetworkReply *reply) {
     if (busPositionReply == reply) {
-
+        readBusPositions(reply);
     } else if (waitTimesReplies.contains(reply)) {
         waitTimesReplies.removeOne(reply);
         readWaitTimes(reply);
@@ -320,7 +320,10 @@ void GTWikiBusFetcher::readWaitTimes(QNetworkReply *reply) {
 
                 stop.getStopTimes().clear();
             } else if (reader.name() == QStringLiteral("prediction")) {
-                stop.getStopTimes().append(reader.attributes().value("seconds").toInt());
+                StopWait stopWait;
+                stopWait.setTime(reader.attributes().value("seconds").toInt());
+                stopWait.setBusId(reader.attributes().value("vehicle").toInt());
+                stop.getStopTimes().append(stopWait);
             }
             break;
         default:
@@ -357,13 +360,15 @@ void GTWikiBusFetcher::readBusPositions(QNetworkReply *reply) {
 
                 for (int i = 0; i < routes.size(); i++) {
                     Route possibleRoute = routes.at(i);
-                    if (possibleRoute.getTag() != routeTag) {
+                    if (possibleRoute.getTag() == routeTag) {
                         route = possibleRoute;
                         continue;
                     }
                 }
 
-                Bus bus = route.getBuses().value(busId, Bus());
+                route.getBuses().clear();
+
+                Bus bus;
                 bus.setRoute(route);
 
                 geos::geom::Coordinate coordinate;

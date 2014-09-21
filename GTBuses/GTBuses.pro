@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     gtwikibusfetcher.cpp \
     routemodel.cpp \
     stopmodel.cpp \
-    bus.cpp
+    bus.cpp \
+    stopwait.cpp
 
 RESOURCES += qml.qrc
 
@@ -32,7 +33,8 @@ HEADERS += \
     gtwikibusfetcher.h \
     routemodel.h \
     stopmodel.h \
-    bus.h
+    bus.h \
+    stopwait.h
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../geos/release/ -lgeos
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../geos/debug/ -lgeos

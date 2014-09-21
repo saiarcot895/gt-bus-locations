@@ -4,7 +4,7 @@
 class BusData : public QSharedData {
 public:
     QSharedPointer<geos::geom::Point> location;
-    Bus::Status status;
+    Bus::Status status = Bus::Unknown;
     Route route;
     Stop departingStop;
     Stop arrivingStop;
@@ -40,6 +40,10 @@ Stop Bus::getDepartingStop() const {
 
 void Bus::setLocation(QSharedPointer<geos::geom::Point> location) {
     data->location = location;
+
+    if (data->route.getTag() == "green") {
+        return;
+    }
 
     QList<Stop> stops;
 

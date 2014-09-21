@@ -8,6 +8,7 @@
 #include <QSharedPointer>
 #include <geos/geom/Point.h>
 #include "route.h"
+#include "direction.h"
 #include "stop.h"
 
 class BusData;
@@ -31,11 +32,13 @@ public:
     QSharedPointer<geos::geom::Point> getLocation() const;
     Status getStatus() const;
     Route getRoute() const;
+    Direction getDirection() const;
     Stop getArrivingStop() const;
     Stop getDepartingStop() const;
 
     void setLocation(QSharedPointer<geos::geom::Point> location);
     void setRoute(Route route);
+    void setDirection(Direction direction);
 
 private:
     QExplicitlySharedDataPointer<BusData> data;

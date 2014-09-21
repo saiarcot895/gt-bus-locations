@@ -262,7 +262,7 @@ void GTWikiBusFetcher::readRouteConfig() {
 
     updateInfo();
 
-    timer->start(15000);
+    timer->start(5000);
 }
 
 void GTWikiBusFetcher::updateInfo() {
@@ -356,14 +356,14 @@ void GTWikiBusFetcher::readBusPositions(QNetworkReply *reply) {
         return;
     }
 
-    QString routeTag;
-    Route route;
-
     while (!reader.atEnd()) {
         switch (reader.readNext()) {
         case QXmlStreamReader::StartElement:
             if (reader.name() == QStringLiteral("vehicle")) {
-                routeTag = reader.attributes().value("routeTag").toString();
+                Route route;
+                Direction direction;
+                QString routeTag = reader.attributes().value("routeTag").toString();
+                QString dirTag = reader.attributes().value("dirTag").toString();
                 int busId = reader.attributes().value("id").toInt();
                 double lat = reader.attributes().value("lat").toDouble();
                 double lon = reader.attributes().value("lon").toDouble();
@@ -372,6 +372,7 @@ void GTWikiBusFetcher::readBusPositions(QNetworkReply *reply) {
                     Route possibleRoute = routes.at(i);
                     if (possibleRoute.getTag() == routeTag) {
                         route = possibleRoute;
+                        direction = route.getDirections().value(dirTag);
                         continue;
                     }
                 }
@@ -380,6 +381,7 @@ void GTWikiBusFetcher::readBusPositions(QNetworkReply *reply) {
 
                 Bus bus;
                 bus.setRoute(route);
+                bus.setDirection(direction);
 
                 geos::geom::Coordinate coordinate;
                 coordinate.x = reader.attributes().value("lon").toDouble();

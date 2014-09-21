@@ -83,6 +83,12 @@ void MainWindow::displayWaitTimes() {
                 busPositionLabel->setProperty("text", QString("Between %1 and %2")
                                               .arg(bus.getDepartingStop().getStopName())
                                               .arg(bus.getArrivingStop().getStopName()));
+            } else if (bus.getStatus() == Bus::Departing) {
+                busPositionLabel->setProperty("text", QString("Departing %1")
+                                              .arg(bus.getDepartingStop().getStopName()));
+            } else if (bus.getStatus() == Bus::Arriving) {
+                busPositionLabel->setProperty("text", QString("Arriving %1")
+                                              .arg(bus.getArrivingStop().getStopName()));
             }
         } else {
             timeLabel->setProperty("text", QStringLiteral("No prediction"));

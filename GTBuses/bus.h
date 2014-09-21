@@ -25,6 +25,7 @@ public:
         Arriving,
         Departing,
         InTransit,
+        AtStop
     };
 
     QSharedPointer<geos::geom::Point> getLocation() const;

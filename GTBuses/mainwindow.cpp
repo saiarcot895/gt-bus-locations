@@ -76,9 +76,14 @@ void MainWindow::displayWaitTimes() {
             StopWait stopWait = selectedStop.getStopTimes().at(i);
             timeLabel->setProperty("text", QStringLiteral("%1 minutes").arg(stopWait.getTime() / 60));
             Bus bus = selectedRoute.getBuses().value(stopWait.getBusId());
-            busPositionLabel->setProperty("text", QString("Between %1 and %2")
-                                          .arg(bus.getDepartingStop().getStopName())
-                                          .arg(bus.getArrivingStop().getStopName()));
+            if (bus.getStatus() == Bus::AtStop) {
+                busPositionLabel->setProperty("text", QString("At %1")
+                                              .arg(bus.getArrivingStop().getStopName()));
+            } else if (bus.getStatus() == Bus::InTransit) {
+                busPositionLabel->setProperty("text", QString("Between %1 and %2")
+                                              .arg(bus.getDepartingStop().getStopName())
+                                              .arg(bus.getArrivingStop().getStopName()));
+            }
         } else {
             timeLabel->setProperty("text", QStringLiteral("No prediction"));
             busPositionLabel->setProperty("text", "");

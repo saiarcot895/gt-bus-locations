@@ -56,7 +56,11 @@ void Bus::setLocation(QSharedPointer<geos::geom::Point> location) {
         Stop prevStop = stops.at(i);
         Stop stop = stops.at((i + 1) % stops.length());
 
-        if (data->location->isWithinDistance(stop.getArrivingSegment().data(), (double)15 / DEGREES_TO_METERS)) {
+        if (data->location->isWithinDistance(stop.getCoordinate().data(), (double)20 / DEGREES_TO_METERS)) {
+            data->arrivingStop = stop;
+            data->status = Bus::AtStop;
+            break;
+        } else if (data->location->isWithinDistance(stop.getArrivingSegment().data(), (double)30 / DEGREES_TO_METERS)) {
             data->arrivingStop = stop;
             data->departingStop = prevStop;
             data->status = Bus::InTransit;

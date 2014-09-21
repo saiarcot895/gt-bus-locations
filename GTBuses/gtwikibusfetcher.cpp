@@ -222,7 +222,17 @@ void GTWikiBusFetcher::readRouteConfig() {
                     prevStop.setDepartingSegment(stopPath);
                     stop.setArrivingSegment(stopPath);
                 }
-                stops.first().setArrivingSegment(stops.last().getDepartingSegment());
+
+                geos::geom::CoordinateSequence* sequence =
+                        sequenceFactory->create((std::vector<geos::geom::Coordinate>*) NULL, 2);
+
+                for (int i = previousIndex; i != startingIndex; i++, i %= busPath->getCoordinatesRO()->size()) {
+                    const geos::geom::Coordinate busCoordinate = busPath->getCoordinateN(i);
+                    sequence->add(busCoordinate);
+                }
+                QSharedPointer<geos::geom::LineString> stopPath(factory->createLineString(sequence));
+                stops.first().setArrivingSegment(stopPath);
+                stops.last().setDepartingSegment(stopPath);
 
                 paths.clear();
 

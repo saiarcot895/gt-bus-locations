@@ -2,6 +2,7 @@
 #include <QNetworkRequest>
 #include <QXmlStreamReader>
 #include <QDebug>
+#include <QThread>
 
 #include <geos/geom/Geometry.h>
 #include <geos/geom/GeometryFactory.h>
@@ -16,18 +17,32 @@
 GTWikiBusFetcher::GTWikiBusFetcher(QObject *parent) :
     QObject(parent),
     manager(new QNetworkAccessManager(this)),
+    routeConfigReply(NULL),
     timer(new QTimer(this)),
     factory(new geos::geom::GeometryFactory(new geos::geom::PrecisionModel(), 4326))
 {
+    getRouteConfig();
+}
+
+void GTWikiBusFetcher::getRouteConfig() {
+    timer->stop();
+    disconnect(timer, SIGNAL(timeout()), this, SLOT(getRouteConfig()));
+    if (routeConfigReply != NULL) {
+        disconnect(routeConfigReply, SIGNAL(finished()), this, SLOT(readRouteConfig()));
+    }
+
     routeConfigReply = manager->get(QNetworkRequest(
                                         QUrl("http://gtwiki.info/nextbus/nextbus.php?a=georgia-tech&command=routeConfig")));
     connect(routeConfigReply, SIGNAL(finished()), this, SLOT(readRouteConfig()));
-    connect(routeConfigReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(readRouteConfig()));
 }
 
 void GTWikiBusFetcher::readRouteConfig() {
     if (routeConfigReply->error() != QNetworkReply::NoError) {
         qCritical() << "Error occurred: " + routeConfigReply->errorString();
+
+        connect(timer, SIGNAL(timeout()), this, SLOT(getRouteConfig()));
+        timer->setSingleShot(true);
+        timer->start(5000);
         return;
     }
 
@@ -262,6 +277,7 @@ void GTWikiBusFetcher::readRouteConfig() {
 
     updateInfo();
 
+    timer->setSingleShot(false);
     timer->start(5000);
 }
 

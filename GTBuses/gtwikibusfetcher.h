@@ -25,6 +25,7 @@ public slots:
     void readRouteConfig();
     void updateInfo();
     void distributeInfo(QNetworkReply* reply);
+    void getRouteConfig();
 
 private:
     void readWaitTimes(QNetworkReply* reply);

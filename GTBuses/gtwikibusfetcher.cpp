@@ -39,6 +39,7 @@ void GTWikiBusFetcher::getRouteConfig() {
 void GTWikiBusFetcher::readRouteConfig() {
     if (routeConfigReply->error() != QNetworkReply::NoError) {
         qCritical() << "Error occurred: " + routeConfigReply->errorString();
+        routeConfigReply->deleteLater();
 
         connect(timer, SIGNAL(timeout()), this, SLOT(getRouteConfig()));
         timer->setSingleShot(true);
@@ -106,7 +107,12 @@ void GTWikiBusFetcher::readRouteConfig() {
                 bool changesMade = true;
 
                 if (route.getTag() == "green") {
+                    for (int i = 0; i < paths.size(); i++) {
+                        geos::geom::CoordinateSequence* pathSequence = paths.at(i);
+                        delete pathSequence;
+                    }
                     paths.clear();
+
                     routes.append(route);
                     continue;
                 }
@@ -272,6 +278,8 @@ void GTWikiBusFetcher::readRouteConfig() {
     disconnect(routeConfigReply, SIGNAL(finished()), this, SLOT(readRouteConfig()));
     disconnect(routeConfigReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(readRouteConfig()));
 
+    routeConfigReply->deleteLater();
+
     connect(timer, SIGNAL(timeout()), this, SLOT(updateInfo()));
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(distributeInfo(QNetworkReply*)));
 
@@ -357,6 +365,8 @@ void GTWikiBusFetcher::readWaitTimes(QNetworkReply *reply) {
         }
     }
 
+    reply->deleteLater();
+
     emit waitTimesUpdated(routeTag);
 }
 
@@ -398,8 +408,8 @@ void GTWikiBusFetcher::readBusPositions(QNetworkReply *reply) {
                 bus.setDirection(direction);
 
                 geos::geom::Coordinate coordinate;
-                coordinate.x = reader.attributes().value("lon").toDouble();
-                coordinate.y = reader.attributes().value("lat").toDouble();
+                coordinate.x = lon;
+                coordinate.y = lat;
 
                 QSharedPointer<geos::geom::Point> point(factory->createPoint(coordinate));
                 bus.setLocation(point);
@@ -411,6 +421,8 @@ void GTWikiBusFetcher::readBusPositions(QNetworkReply *reply) {
             break;
         }
     }
+
+    reply->deleteLater();
 }
 
 QList<Route> GTWikiBusFetcher::getRoutes() const {

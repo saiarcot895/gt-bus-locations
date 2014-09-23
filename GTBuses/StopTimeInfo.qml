@@ -2,7 +2,7 @@ import QtQuick 2.2
 import QtQuick.Controls 1.1
 
 Item {
-    width: 8 + label1.width + 8 + label2.width + 8
+    width: parent.width
     height: label2.height
     property string time: ""
     property string position: ""

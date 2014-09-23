@@ -71,28 +71,29 @@ void MainWindow::displayStopTimes(int stopIndex) {
 void MainWindow::displayWaitTimes() {
     for (int i = 0; i < 3; i++) {
         QObject* timeLabel = rootObject->findChild<QObject*>(QStringLiteral("stopTime%1").arg(i));
-        QObject* busPositionLabel = rootObject->findChild<QObject*>(QStringLiteral("busPosition%1").arg(i));
         if (selectedStop.getStopTimes().size() > i) {
             StopWait stopWait = selectedStop.getStopTimes().at(i);
-            timeLabel->setProperty("text", QStringLiteral("%1 minutes").arg(stopWait.getTime() / 60));
+            timeLabel->setProperty("time", QStringLiteral("%1 minutes").arg(stopWait.getTime() / 60));
             Bus bus = selectedRoute.getBuses().value(stopWait.getBusId());
             if (bus.getStatus() == Bus::AtStop) {
-                busPositionLabel->setProperty("text", QString("At %1")
+                timeLabel->setProperty("position", QString("At %1")
                                               .arg(bus.getArrivingStop().getStopName()));
             } else if (bus.getStatus() == Bus::InTransit) {
-                busPositionLabel->setProperty("text", QString("Between %1 and %2")
+                timeLabel->setProperty("position", QString("Between %1 and %2")
                                               .arg(bus.getDepartingStop().getStopName())
                                               .arg(bus.getArrivingStop().getStopName()));
             } else if (bus.getStatus() == Bus::Departing) {
-                busPositionLabel->setProperty("text", QString("Departing %1")
+                timeLabel->setProperty("position", QString("Departing %1")
                                               .arg(bus.getDepartingStop().getStopName()));
             } else if (bus.getStatus() == Bus::Arriving) {
-                busPositionLabel->setProperty("text", QString("Arriving %1")
+                timeLabel->setProperty("position", QString("Arriving %1")
                                               .arg(bus.getArrivingStop().getStopName()));
+            } else {
+                timeLabel->setProperty("position", "");
             }
         } else {
-            timeLabel->setProperty("text", QStringLiteral("No prediction"));
-            busPositionLabel->setProperty("text", "");
+            timeLabel->setProperty("time", QStringLiteral("No prediction"));
+            timeLabel->setProperty("position", "");
         }
     }
 }

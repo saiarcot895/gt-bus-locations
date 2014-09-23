@@ -114,57 +114,35 @@ ApplicationWindow {
         anchors.right: parent.right
         anchors.rightMargin: 8
 
-        Label {
-            id: label4
+        StopTimeInfo {
+            id: stopTime0
             objectName: "stopTime0"
-            text: "Label"
             anchors.top: parent.top
             anchors.topMargin: 8
             anchors.left: parent.left
             anchors.leftMargin: 8
-        }
-
-        Label {
-            id: label7
-            objectName: "busPosition0"
-            text: "Label"
-            anchors.verticalCenter: label4.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 8
         }
 
-        Label {
-            id: label5
+        StopTimeInfo {
+            id: stopTime1
             objectName: "stopTime1"
-            text: "Label"
+            anchors.top: stopTime0.bottom
+            anchors.topMargin: 8
             anchors.left: parent.left
             anchors.leftMargin: 8
-            anchors.top: label4.bottom
-            anchors.topMargin: 8
-        }
-
-        Label {
-            id: label8
-            objectName: "busPosition1"
-            text: "Label"
-            anchors.verticalCenter: label5.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 8
         }
 
-        Label {
-            id: label6
+        StopTimeInfo {
+            id: stopTime2
             objectName: "stopTime2"
+            anchors.top: stopTime1.bottom
+            anchors.topMargin: 8
             anchors.left: parent.left
             anchors.leftMargin: 8
-            anchors.top: label5.bottom
-            anchors.topMargin: 8
-        }
-
-        Label {
-            id: label9
-            objectName: "busPosition2"
-            anchors.verticalCenter: label6.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 8
         }

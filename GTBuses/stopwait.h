@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include <QSharedDataPointer>
+#include <QExplicitlySharedDataPointer>
 
 class StopWaitData;
 
@@ -22,7 +22,7 @@ public:
     void setBusId(int busId);
 
 private:
-    QSharedDataPointer<StopWaitData> data;
+    QExplicitlySharedDataPointer<StopWaitData> data;
 };
 
 #endif // STOPWAIT_H

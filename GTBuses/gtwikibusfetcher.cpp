@@ -423,8 +423,16 @@ void GTWikiBusFetcher::readBusPositions(QNetworkReply *reply) {
     }
 
     reply->deleteLater();
+
+    emit waitTimesUpdated("");
 }
 
 QList<Route> GTWikiBusFetcher::getRoutes() const {
     return routes;
+}
+
+GTWikiBusFetcher::~GTWikiBusFetcher() {
+    delete timer;
+    delete manager;
+    delete factory;
 }

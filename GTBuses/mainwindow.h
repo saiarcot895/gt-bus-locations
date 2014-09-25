@@ -16,6 +16,7 @@ public:
     Q_INVOKABLE void displayDirections(int routeIndex);
     Q_INVOKABLE void displayStops(int directionsIndex);
 
+    ~MainWindow();
 public slots:
     Q_INVOKABLE void displayStopTimes(int stopIndex);
 

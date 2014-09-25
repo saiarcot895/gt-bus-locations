@@ -17,6 +17,7 @@ public:
 
     QList<Route> getRoutes() const;
 
+    ~GTWikiBusFetcher();
 signals:
     void loadingDone();
     void waitTimesUpdated(QString routeTag);

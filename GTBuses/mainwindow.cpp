@@ -99,7 +99,14 @@ void MainWindow::displayWaitTimes() {
 }
 
 void MainWindow::refreshWaitTimes(QString routeTag) {
-    if (selectedRoute.getTag() == routeTag) {
+    if (routeTag.isEmpty() || selectedRoute.getTag() == routeTag) {
         displayWaitTimes();
     }
+}
+
+MainWindow::~MainWindow() {
+    delete fetcher;
+    delete rootObject;
+    delete component;
+    delete engine;
 }

@@ -29,6 +29,7 @@ void GTWikiBusFetcher::getRouteConfig() {
     disconnect(timer, SIGNAL(timeout()), this, SLOT(getRouteConfig()));
     if (routeConfigReply != NULL) {
         disconnect(routeConfigReply, SIGNAL(finished()), this, SLOT(readRouteConfig()));
+        routeConfigReply->deleteLater();
     }
 
     routeConfigReply = manager->get(QNetworkRequest(
@@ -39,7 +40,6 @@ void GTWikiBusFetcher::getRouteConfig() {
 void GTWikiBusFetcher::readRouteConfig() {
     if (routeConfigReply->error() != QNetworkReply::NoError) {
         qCritical() << "Error occurred: " + routeConfigReply->errorString();
-        routeConfigReply->deleteLater();
 
         connect(timer, SIGNAL(timeout()), this, SLOT(getRouteConfig()));
         timer->setSingleShot(true);

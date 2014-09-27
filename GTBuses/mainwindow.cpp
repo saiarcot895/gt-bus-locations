@@ -40,8 +40,7 @@ void MainWindow::continueLoading() {
 void MainWindow::displayRoutes() {
     RouteModel* model = new RouteModel(this);
     model->setRoutes(fetcher->getRoutes());
-    engine->rootContext()->setContextProperty("routesModel", model);
-    rootObject->findChild<QObject*>("routesComboBox")->setProperty("enabled", true);
+    rootObject->setProperty("routesModel", QVariant::fromValue(model));
 }
 
 void MainWindow::displayDirections(int routeIndex) {
@@ -49,8 +48,7 @@ void MainWindow::displayDirections(int routeIndex) {
     selectedRoute = fetcher->getRoutes().at(routeIndex);
     availableDirections = selectedRoute.getDirections().values();
     model->setDirections(availableDirections);
-    engine->rootContext()->setContextProperty("directionsModel", model);
-    rootObject->findChild<QObject*>("directionsComboBox")->setProperty("enabled", true);
+    rootObject->setProperty("directionsModel", QVariant::fromValue(model));
 }
 
 void MainWindow::displayStops(int directionsIndex) {
@@ -58,8 +56,7 @@ void MainWindow::displayStops(int directionsIndex) {
     selectedDirection = availableDirections.at(directionsIndex);
     availableStops = selectedDirection.getStops();
     model->setStops(availableStops);
-    engine->rootContext()->setContextProperty("stopsModel", model);
-    rootObject->findChild<QObject*>("stopsComboBox")->setProperty("enabled", true);
+    rootObject->setProperty("stopsModel", QVariant::fromValue(model));
 }
 
 void MainWindow::displayStopTimes(int stopIndex) {

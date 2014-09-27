@@ -8,6 +8,10 @@ ApplicationWindow {
     visible: true
     title: qsTr("GT Buses")
 
+    property var routesModel: null
+    property var directionsModel: null
+    property var stopsModel: null
+
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
@@ -38,7 +42,7 @@ ApplicationWindow {
     ComboBox {
         id: comboBox1
         objectName: "routesComboBox"
-        enabled: false
+        enabled: routesModel
         anchors.left: label1.right
         anchors.leftMargin: 6
         anchors.top: parent.top
@@ -62,7 +66,7 @@ ApplicationWindow {
     ComboBox {
         id: comboBox2
         objectName: "directionsComboBox"
-        enabled: false
+        enabled: routesModel
         anchors.top: comboBox1.bottom
         anchors.topMargin: 6
         anchors.left: label2.right
@@ -83,7 +87,7 @@ ApplicationWindow {
     ComboBox {
         id: comboBox3
         objectName: "stopsComboBox"
-        enabled: false
+        enabled: routesModel
         anchors.top: comboBox2.bottom
         anchors.topMargin: 6
         anchors.left: label3.right

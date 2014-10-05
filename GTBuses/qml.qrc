@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>StopTimeInfo.qml</file>
+        <file>mainWindow.qml</file>
     </qresource>
 </RCC>

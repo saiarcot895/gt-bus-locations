@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QObject>
-#include <QQmlApplicationEngine>
 #include "gtwikibusfetcher.h"
 
 #include "route.h"
@@ -11,7 +10,9 @@ class MainWindow : public QObject
 {
     Q_OBJECT
 public:
-    explicit MainWindow(QObject *parent = 0);
+    explicit MainWindow(QObject* rootObject, QObject *parent = 0);
+
+    void showMainWindow();
 
     Q_INVOKABLE void displayDirections(int routeIndex);
     Q_INVOKABLE void displayStops(int directionsIndex);
@@ -23,13 +24,10 @@ public slots:
 private slots:
     void displayRoutes();
     void refreshWaitTimes(QString routeTag);
-    void continueLoading();
 
 private:
     void displayWaitTimes();
 
-    QQmlApplicationEngine* engine;
-    QQmlComponent* component;
     QObject* rootObject;
     GTWikiBusFetcher* fetcher;
 

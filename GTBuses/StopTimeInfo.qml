@@ -10,6 +10,7 @@ Item {
     Label {
         id: label1
         text: time
+        anchors.verticalCenter: label2.verticalCenter
         anchors.top: parent.top
         anchors.topMargin: 8
         anchors.left: parent.left
@@ -21,7 +22,6 @@ Item {
         text: position
         horizontalAlignment: Text.AlignRight
         wrapMode: Text.Wrap
-        anchors.verticalCenter: label1.verticalCenter
         anchors.left: label1.right
         anchors.leftMargin: 8
         anchors.right: parent.right

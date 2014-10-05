@@ -9,38 +9,24 @@
 #include "stopmodel.h"
 #include "bus.h"
 
-MainWindow::MainWindow(QObject *parent) :
+MainWindow::MainWindow(QObject* rootObject, QObject *parent) :
     QObject(parent),
     fetcher(new GTWikiBusFetcher),
-    rootObject(NULL)
+    rootObject(rootObject)
 {
     connect(fetcher, SIGNAL(loadingDone()), this, SLOT(displayRoutes()));
-    connect(fetcher, SIGNAL(waitTimesUpdated(QString)), this, SLOT(refreshWaitTimes(QString)));
-
-    engine = new QQmlApplicationEngine(this);
-    component = new QQmlComponent(engine, QUrl(QStringLiteral("qrc:///main.qml")));
-    if (component->isLoading()) {
-        connect(component, SIGNAL(statusChanged(QQmlComponent::Status)),
-                this, SLOT(continueLoading()));
-    } else {
-        continueLoading();
-    }
+    connect(fetcher, SIGNAL(waitTimesUpdated(QString)), this, SLOT(refreshWaitTimes(QString))); 
 }
 
-void MainWindow::continueLoading() {
-    if (component->isError()) {
-        qWarning() << component->errors();
-    } else {
-        rootObject = component->create();
-        engine->rootContext()->setContextProperty("mainWindow", this);
-    }
-
+void MainWindow::showMainWindow() {
+    Q_ASSERT(rootObject);
+    rootObject->findChild<QObject*>("pageLoader")->setProperty("source", QStringLiteral("qrc:///mainWindow.qml"));
 }
 
 void MainWindow::displayRoutes() {
     RouteModel* model = new RouteModel(this);
     model->setRoutes(fetcher->getRoutes());
-    rootObject->setProperty("routesModel", QVariant::fromValue(model));
+    rootObject->findChild<QObject*>("mainWindowItem")->setProperty("routesModel", QVariant::fromValue(model));
 }
 
 void MainWindow::displayDirections(int routeIndex) {
@@ -48,7 +34,7 @@ void MainWindow::displayDirections(int routeIndex) {
     selectedRoute = fetcher->getRoutes().at(routeIndex);
     availableDirections = selectedRoute.getDirections().values();
     model->setDirections(availableDirections);
-    rootObject->setProperty("directionsModel", QVariant::fromValue(model));
+    rootObject->findChild<QObject*>("mainWindowItem")->setProperty("directionsModel", QVariant::fromValue(model));
 }
 
 void MainWindow::displayStops(int directionsIndex) {
@@ -56,13 +42,13 @@ void MainWindow::displayStops(int directionsIndex) {
     selectedDirection = availableDirections.at(directionsIndex);
     availableStops = selectedDirection.getStops();
     model->setStops(availableStops);
-    rootObject->setProperty("stopsModel", QVariant::fromValue(model));
+    rootObject->findChild<QObject*>("mainWindowItem")->setProperty("stopsModel", QVariant::fromValue(model));
 }
 
 void MainWindow::displayStopTimes(int stopIndex) {
     selectedStop = availableStops.at(stopIndex);
     displayWaitTimes();
-    rootObject->findChild<QObject*>("stopTimesRectangle")->setProperty("visible", true);
+    rootObject->findChild<QObject*>("mainWindowItem")->findChild<QObject*>("stopTimesRectangle")->setProperty("visible", true);
 }
 
 void MainWindow::displayWaitTimes() {
@@ -104,6 +90,4 @@ void MainWindow::refreshWaitTimes(QString routeTag) {
 MainWindow::~MainWindow() {
     delete fetcher;
     delete rootObject;
-    delete component;
-    delete engine;
 }

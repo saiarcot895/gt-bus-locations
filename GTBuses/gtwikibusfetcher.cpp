@@ -33,7 +33,7 @@ void GTWikiBusFetcher::getRouteConfig() {
     }
 
     routeConfigReply = manager->get(QNetworkRequest(
-                                        QUrl("http://gtbuses.herokuapp.com/routeConfig")));
+                                        QUrl("https://gtbuses.herokuapp.com/routeConfig")));
     connect(routeConfigReply, SIGNAL(finished()), this, SLOT(readRouteConfig()));
 }
 
@@ -292,9 +292,9 @@ void GTWikiBusFetcher::readRouteConfig() {
 void GTWikiBusFetcher::updateInfo() {
     for (int i = 0; i < routes.size(); i++) {
         Route route = routes.at(i);
-        QNetworkReply* waitTimeReply = manager->get(QNetworkRequest(QUrl(QStringLiteral("http://gtbuses.herokuapp.com/predictions/%1").arg(route.getTag()))));
+        QNetworkReply* waitTimeReply = manager->get(QNetworkRequest(QUrl(QStringLiteral("https://gtbuses.herokuapp.com/predictions/%1").arg(route.getTag()))));
         waitTimesReplies.append(waitTimeReply);
-        QNetworkReply* busPositionReply = manager->get(QNetworkRequest(QUrl(QStringLiteral("http://gtbuses.herokuapp.com/locations/%1").arg(route.getTag()))));
+        QNetworkReply* busPositionReply = manager->get(QNetworkRequest(QUrl(QStringLiteral("https://gtbuses.herokuapp.com/locations/%1").arg(route.getTag()))));
         busPositionReplies.append(busPositionReply);
     }
 

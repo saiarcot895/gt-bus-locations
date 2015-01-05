@@ -82,7 +82,7 @@ void MainWindow::displayWaitTimes() {
 }
 
 void MainWindow::refreshWaitTimes(QString routeTag) {
-    if (routeTag.isEmpty() || selectedRoute.getTag() == routeTag) {
+    if (selectedRoute.getTag() == routeTag) {
         displayWaitTimes();
     }
 }

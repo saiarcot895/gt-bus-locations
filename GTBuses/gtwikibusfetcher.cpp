@@ -33,7 +33,7 @@ void GTWikiBusFetcher::getRouteConfig() {
     }
 
     routeConfigReply = manager->get(QNetworkRequest(
-                                        QUrl("http://gtwiki.info/nextbus/nextbus.php?a=georgia-tech&command=routeConfig")));
+                                        QUrl("http://gtbuses.herokuapp.com/routeConfig")));
     connect(routeConfigReply, SIGNAL(finished()), this, SLOT(readRouteConfig()));
 }
 
@@ -292,18 +292,17 @@ void GTWikiBusFetcher::readRouteConfig() {
 void GTWikiBusFetcher::updateInfo() {
     for (int i = 0; i < routes.size(); i++) {
         Route route = routes.at(i);
-        QNetworkReply* reply = manager->get(QNetworkRequest(QUrl(QStringLiteral("http://gtwiki.info/nextbus/nextbus.php?"
-                                                         "a=georgia-tech&command=predictionsForMultiStops&r=%1").arg(route.getTag()))));
-        waitTimesReplies.append(reply);
+        QNetworkReply* waitTimeReply = manager->get(QNetworkRequest(QUrl(QStringLiteral("http://gtbuses.herokuapp.com/predictions/%1").arg(route.getTag()))));
+        waitTimesReplies.append(waitTimeReply);
+        QNetworkReply* busPositionReply = manager->get(QNetworkRequest(QUrl(QStringLiteral("http://gtbuses.herokuapp.com/locations/%1").arg(route.getTag()))));
+        busPositionReplies.append(busPositionReply);
     }
-
-    busPositionReply = manager->get(QNetworkRequest(QUrl(QStringLiteral("http://gtwiki.info/nextbus/nextbus.php?"
-                                                     "a=georgia-tech&command=vehicleLocations"))));
 
 }
 
 void GTWikiBusFetcher::distributeInfo(QNetworkReply *reply) {
-    if (busPositionReply == reply) {
+    if (busPositionReplies.contains(reply)) {
+        busPositionReplies.removeOne(reply);
         readBusPositions(reply);
     } else if (waitTimesReplies.contains(reply)) {
         waitTimesReplies.removeOne(reply);
@@ -382,17 +381,20 @@ void GTWikiBusFetcher::readBusPositions(QNetworkReply *reply) {
         return;
     }
 
+    QString routeTag;
+
     while (!reader.atEnd()) {
         switch (reader.readNext()) {
         case QXmlStreamReader::StartElement:
             if (reader.name() == QStringLiteral("vehicle")) {
-                Route route;
-                Direction direction;
-                QString routeTag = reader.attributes().value("routeTag").toString();
+                routeTag = reader.attributes().value("routeTag").toString();
                 QString dirTag = reader.attributes().value("dirTag").toString();
                 int busId = reader.attributes().value("id").toInt();
                 double lat = reader.attributes().value("lat").toDouble();
                 double lon = reader.attributes().value("lon").toDouble();
+
+                Route route;
+                Direction direction;
 
                 for (int i = 0; i < routes.size(); i++) {
                     Route possibleRoute = routes.at(i);
@@ -424,7 +426,7 @@ void GTWikiBusFetcher::readBusPositions(QNetworkReply *reply) {
 
     reply->deleteLater();
 
-    emit waitTimesUpdated("");
+    emit waitTimesUpdated(routeTag);
 }
 
 QList<Route> GTWikiBusFetcher::getRoutes() const {

@@ -39,7 +39,7 @@ private:
 
     QList<Route> routes;
     QList<QNetworkReply*> waitTimesReplies;
-    QNetworkReply* busPositionReply;
+    QList<QNetworkReply*> busPositionReplies;
 
 };
 

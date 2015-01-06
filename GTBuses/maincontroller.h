@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QQmlApplicationEngine>
 #include "mainwindow.h"
+#include "busschedule.h"
 
 class MainController : public QObject
 {
@@ -11,11 +12,14 @@ class MainController : public QObject
 public:
     explicit MainController(QObject *parent = 0);
 
+    void showBusSchedule(Bus bus);
+
 private slots:
     void continueLoading();
 
 private:
     MainWindow* mainWindow;
+    BusSchedule* busSchedule;
 
     QQmlApplicationEngine* engine;
     QQmlComponent* component;

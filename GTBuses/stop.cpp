@@ -35,6 +35,10 @@ QList<StopWait>& Stop::getStopTimes() {
     return data->waitTimes;
 }
 
+const QList<StopWait> Stop::getStopTimes() const {
+    return data->waitTimes;
+}
+
 QSharedPointer<geos::geom::LineString> Stop::getArrivingSegment() const {
     return data->arrivingSegment;
 }

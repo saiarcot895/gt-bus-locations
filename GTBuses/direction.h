@@ -19,6 +19,7 @@ public:
     QString getDirectionName() const;
     QString getTag() const;
     QList<Stop>& getStops();
+    const QList<Stop> getStops() const;
 
     void setDirectionName(QString directionName);
     void setTag(QString tag);

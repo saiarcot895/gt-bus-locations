@@ -16,6 +16,7 @@ public:
 
     Q_INVOKABLE void displayDirections(int routeIndex);
     Q_INVOKABLE void displayStops(int directionsIndex);
+    Q_INVOKABLE void displayBusSchedule(int busId);
 
     ~MainWindow();
 public slots:
@@ -34,6 +35,7 @@ private:
     Route selectedRoute;
     Direction selectedDirection;
     Stop selectedStop;
+    bool visible;
 
     QList<Direction> availableDirections;
     QList<Stop> availableStops;

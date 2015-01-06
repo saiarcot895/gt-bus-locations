@@ -8,11 +8,13 @@
 #include "directionmodel.h"
 #include "stopmodel.h"
 #include "bus.h"
+#include "maincontroller.h"
 
 MainWindow::MainWindow(QObject* rootObject, QObject *parent) :
     QObject(parent),
     fetcher(new GTWikiBusFetcher),
-    rootObject(rootObject)
+    rootObject(rootObject),
+    visible(false)
 {
     connect(fetcher, SIGNAL(loadingDone()), this, SLOT(displayRoutes()));
     connect(fetcher, SIGNAL(waitTimesUpdated(QString)), this, SLOT(refreshWaitTimes(QString))); 
@@ -21,6 +23,7 @@ MainWindow::MainWindow(QObject* rootObject, QObject *parent) :
 void MainWindow::showMainWindow() {
     Q_ASSERT(rootObject);
     rootObject->findChild<QObject*>("pageLoader")->setProperty("source", QStringLiteral("qrc:///mainWindow.qml"));
+    visible = true;
 }
 
 void MainWindow::displayRoutes() {
@@ -52,12 +55,16 @@ void MainWindow::displayStopTimes(int stopIndex) {
 }
 
 void MainWindow::displayWaitTimes() {
+    if (!visible) {
+        return;
+    }
     for (int i = 0; i < 3; i++) {
         QObject* timeLabel = rootObject->findChild<QObject*>(QStringLiteral("stopTime%1").arg(i));
         if (selectedStop.getStopTimes().size() > i) {
             StopWait stopWait = selectedStop.getStopTimes().at(i);
             timeLabel->setProperty("time", QStringLiteral("%1 minutes").arg(stopWait.getTime() / 60));
             Bus bus = selectedRoute.getBuses().value(stopWait.getBusId());
+            timeLabel->setProperty("busId", bus.getId());
             if (bus.getStatus() == Bus::AtStop) {
                 timeLabel->setProperty("position", QString("At %1")
                                               .arg(bus.getArrivingStop().getStopName()));
@@ -85,6 +92,12 @@ void MainWindow::refreshWaitTimes(QString routeTag) {
     if (selectedRoute.getTag() == routeTag) {
         displayWaitTimes();
     }
+}
+
+void MainWindow::displayBusSchedule(int busId) {
+    Bus bus = selectedRoute.getBuses().value(busId);
+    visible = false;
+    static_cast<MainController*>(parent())->showBusSchedule(bus);
 }
 
 MainWindow::~MainWindow() {

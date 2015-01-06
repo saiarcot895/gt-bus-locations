@@ -27,6 +27,7 @@ public:
     QString getTag() const;
     QSharedPointer<geos::geom::Point> getCoordinate() const;
     QList<StopWait>& getStopTimes();
+    const QList<StopWait> getStopTimes() const;
     QSharedPointer<geos::geom::LineString> getArrivingSegment() const;
     QSharedPointer<geos::geom::LineString> getDepartingSegment() const;
 

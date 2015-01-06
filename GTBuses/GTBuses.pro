@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     stopmodel.cpp \
     bus.cpp \
     stopwait.cpp \
-    maincontroller.cpp
+    maincontroller.cpp \
+    busschedule.cpp
 
 RESOURCES += qml.qrc
 
@@ -36,7 +37,8 @@ HEADERS += \
     stopmodel.h \
     bus.h \
     stopwait.h \
-    maincontroller.h
+    maincontroller.h \
+    busschedule.h
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../geos/release/ -lgeos
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../geos/debug/ -lgeos

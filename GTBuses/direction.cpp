@@ -28,6 +28,10 @@ QList<Stop>& Direction::getStops() {
     return data->stops;
 }
 
+const QList<Stop> Direction::getStops() const {
+    return data->stops;
+}
+
 void Direction::setDirectionName(QString directionName) {
     data->directionName = directionName;
 }

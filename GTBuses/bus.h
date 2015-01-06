@@ -31,12 +31,14 @@ public:
 
     QSharedPointer<geos::geom::Point> getLocation() const;
     Status getStatus() const;
+    int getId() const;
     Route getRoute() const;
     Direction getDirection() const;
     Stop getArrivingStop() const;
     Stop getDepartingStop() const;
 
     void setLocation(QSharedPointer<geos::geom::Point> location);
+    void setId(int id);
     void setRoute(Route route);
     void setDirection(Direction direction);
 

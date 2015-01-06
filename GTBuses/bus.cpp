@@ -5,6 +5,7 @@ class BusData : public QSharedData {
 public:
     QSharedPointer<geos::geom::Point> location;
     Bus::Status status = Bus::Unknown;
+    int id;
     Route route;
     Direction direction;
     Stop departingStop;
@@ -25,6 +26,10 @@ QSharedPointer<geos::geom::Point> Bus::getLocation() const {
 
 Bus::Status Bus::getStatus() const {
     return data->status;
+}
+
+int Bus::getId() const {
+    return data->id;
 }
 
 Route Bus::getRoute() const {
@@ -82,6 +87,10 @@ void Bus::setLocation(QSharedPointer<geos::geom::Point> location) {
             }
         }
     }
+}
+
+void Bus::setId(int id) {
+    data->id = id;
 }
 
 void Bus::setRoute(Route route) {

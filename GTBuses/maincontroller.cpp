@@ -17,12 +17,21 @@ MainController::MainController(QObject *parent) :
 
 void MainController::continueLoading() {
     if (component->isError()) {
-        qWarning() << component->errors();
+        qCritical() << component->errors();
     } else {
         rootObject = component->create();
 
-        mainWindow = new MainWindow(rootObject);
+        mainWindow = new MainWindow(rootObject, this);
+        busSchedule = new BusSchedule(rootObject, this);
+
         engine->rootContext()->setContextProperty("mainWindow", mainWindow);
+        engine->rootContext()->setContextProperty("busSchedule", busSchedule);
+
         mainWindow->showMainWindow();
     }
+}
+
+void MainController::showBusSchedule(Bus bus) {
+    busSchedule->setBus(bus);
+    busSchedule->showBusSchedule();
 }

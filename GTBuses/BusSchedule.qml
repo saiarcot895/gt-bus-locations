@@ -46,9 +46,10 @@ Item {
             id: scheduleView
             anchors.fill: parent
             model: scheduleModel
-            delegate: Item {
+            delegate: Rectangle {
                 height: Math.max(label1.height, label2.height) + 4
                 width: parent.width
+                color: highlight ? "yellow" : "transparent"
 
                 Label {
                     id: label1
@@ -72,7 +73,7 @@ Item {
         }
     }
 
-    function addItem(stopName, time) {
-        scheduleModel.append({"stopName": stopName, "time": time});
+    function addItem(stopName, time, highlight) {
+        scheduleModel.append({"stopName": stopName, "time": time, "highlight": highlight});
     }
 }

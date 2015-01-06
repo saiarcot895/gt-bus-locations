@@ -46,4 +46,6 @@ private:
     QExplicitlySharedDataPointer<StopData> data;
 };
 
+bool operator==(const Stop stop1, const Stop stop2);
+
 #endif // STOP_H

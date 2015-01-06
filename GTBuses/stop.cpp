@@ -70,6 +70,10 @@ void Stop::setDepartingSegment(QSharedPointer<geos::geom::LineString> departingS
     data->departingSegment = departingSegment;
 }
 
+bool operator==(const Stop stop1, const Stop stop2) {
+    return stop1.getTag() == stop2.getTag() && stop1.getCoordinate() == stop2.getCoordinate();
+}
+
 Stop &Stop::operator=(const Stop &rhs)
 {
     if (this != &rhs)

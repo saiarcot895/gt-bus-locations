@@ -68,21 +68,7 @@ void MainWindow::displayWaitTimes() {
             time = QString("%1 minutes").arg(stopWait.getTime() / 60);
             Bus bus = selectedRoute.getBuses().value(stopWait.getBusId());
             id = bus.getId();
-            if (bus.getStatus() == Bus::AtStop) {
-                position = QString("At %1").arg(bus.getArrivingStop().getStopName());
-            } else if (bus.getStatus() == Bus::InTransit) {
-                position = QString("Between %1 and %2")
-                                              .arg(bus.getDepartingStop().getStopName())
-                                              .arg(bus.getArrivingStop().getStopName());
-            } else if (bus.getStatus() == Bus::Departing) {
-                position = QString("Departing %1")
-                                              .arg(bus.getDepartingStop().getStopName());
-            } else if (bus.getStatus() == Bus::Arriving) {
-                position = QString("Arriving %1")
-                                              .arg(bus.getArrivingStop().getStopName());
-            } else {
-                position = QString();
-            }
+            position = bus.getStatusString();
         } else {
             time = QStringLiteral("No prediction");
         }

@@ -31,6 +31,7 @@ public:
 
     QSharedPointer<geos::geom::Point> getLocation() const;
     Status getStatus() const;
+    QString getStatusString() const;
     int getId() const;
     Route getRoute() const;
     Direction getDirection() const;

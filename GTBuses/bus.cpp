@@ -28,6 +28,22 @@ Bus::Status Bus::getStatus() const {
     return data->status;
 }
 
+QString Bus::getStatusString() const {
+    QString status;
+    if (getStatus() == Bus::AtStop) {
+        status = QString("At %1").arg(getArrivingStop().getStopName());
+    } else if (getStatus() == Bus::InTransit) {
+        status = QString("Between %1 and %2")
+                .arg(getDepartingStop().getStopName())
+                .arg(getArrivingStop().getStopName());
+    } else if (getStatus() == Bus::Departing) {
+        status = QString("Departing %1").arg(getDepartingStop().getStopName());
+    } else if (getStatus() == Bus::Arriving) {
+        status = QString("Arriving %1").arg(getArrivingStop().getStopName());
+    }
+    return status;
+}
+
 int Bus::getId() const {
     return data->id;
 }

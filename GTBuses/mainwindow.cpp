@@ -51,40 +51,46 @@ void MainWindow::displayStops(int directionsIndex) {
 void MainWindow::displayStopTimes(int stopIndex) {
     selectedStop = availableStops.at(stopIndex);
     displayWaitTimes();
-    rootObject->findChild<QObject*>("mainWindowItem")->findChild<QObject*>("stopTimesRectangle")->setProperty("visible", true);
+    rootObject->findChild<QObject*>("mainWindowItem")->findChild<QObject*>("stopWaitTimeView")->setProperty("visible", true);
 }
 
 void MainWindow::displayWaitTimes() {
     if (!visible) {
         return;
     }
+    QObject* mainWindowItem = rootObject->findChild<QObject*>("mainWindowItem");
     for (int i = 0; i < 3; i++) {
-        QObject* timeLabel = rootObject->findChild<QObject*>(QStringLiteral("stopTime%1").arg(i));
+        QString time;
+        QString position;
+        int id = 0;
         if (selectedStop.getStopTimes().size() > i) {
             StopWait stopWait = selectedStop.getStopTimes().at(i);
-            timeLabel->setProperty("time", QStringLiteral("%1 minutes").arg(stopWait.getTime() / 60));
+            time = QString("%1 minutes").arg(stopWait.getTime() / 60);
             Bus bus = selectedRoute.getBuses().value(stopWait.getBusId());
-            timeLabel->setProperty("busId", bus.getId());
+            id = bus.getId();
             if (bus.getStatus() == Bus::AtStop) {
-                timeLabel->setProperty("position", QString("At %1")
-                                              .arg(bus.getArrivingStop().getStopName()));
+                position = QString("At %1").arg(bus.getArrivingStop().getStopName());
             } else if (bus.getStatus() == Bus::InTransit) {
-                timeLabel->setProperty("position", QString("Between %1 and %2")
+                position = QString("Between %1 and %2")
                                               .arg(bus.getDepartingStop().getStopName())
-                                              .arg(bus.getArrivingStop().getStopName()));
+                                              .arg(bus.getArrivingStop().getStopName());
             } else if (bus.getStatus() == Bus::Departing) {
-                timeLabel->setProperty("position", QString("Departing %1")
-                                              .arg(bus.getDepartingStop().getStopName()));
+                position = QString("Departing %1")
+                                              .arg(bus.getDepartingStop().getStopName());
             } else if (bus.getStatus() == Bus::Arriving) {
-                timeLabel->setProperty("position", QString("Arriving %1")
-                                              .arg(bus.getArrivingStop().getStopName()));
+                position = QString("Arriving %1")
+                                              .arg(bus.getArrivingStop().getStopName());
             } else {
-                timeLabel->setProperty("position", "");
+                position = QString();
             }
         } else {
-            timeLabel->setProperty("time", QStringLiteral("No prediction"));
-            timeLabel->setProperty("position", "");
+            time = QStringLiteral("No prediction");
         }
+        QMetaObject::invokeMethod(mainWindowItem, "setItem",
+                                  Q_ARG(QVariant, i),
+                                  Q_ARG(QVariant, time),
+                                  Q_ARG(QVariant, position),
+                                  Q_ARG(QVariant, id));
     }
 }
 

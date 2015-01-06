@@ -11,14 +11,14 @@ Item {
     Label {
         id: label1
         text: time
-        anchors.verticalCenter: label2.verticalCenter
+        anchors.verticalCenter: fullScheduleButton.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: 8
     }
 
     Button {
         id: fullScheduleButton
-        anchors.verticalCenter: label2.verticalCenter
+        anchors.top: parent.top
         anchors.left: label1.right
         anchors.leftMargin: 6
         text: "Show bus schedule"
@@ -32,6 +32,7 @@ Item {
         wrapMode: Text.Wrap
         visible: parent.width > label1.width + fullScheduleButton.width + 22 + 75
         height: visible ? implicitHeight : 0
+        anchors.verticalCenter: fullScheduleButton.verticalCenter
         anchors.left: fullScheduleButton.right
         anchors.leftMargin: 6
         anchors.right: parent.right

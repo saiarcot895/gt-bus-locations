@@ -95,48 +95,37 @@ Item {
         anchors.bottomMargin: 8
     }
 
-    Rectangle {
-        id: rectangle1
-        objectName: "stopTimesRectangle"
-        color: "#00000000"
+    ListModel {
+        id: stopWaitTimeModel
+    }
+
+    ScrollView {
+        id: stopWaitTimeView
+        objectName: "stopWaitTimeView"
         visible: false
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.top: comboBox3.bottom
+        anchors.topMargin: 6
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 8
         anchors.left: parent.left
         anchors.leftMargin: 8
         anchors.right: parent.right
         anchors.rightMargin: 8
 
-        StopTimeInfo {
-            id: stopTime0
-            objectName: "stopTime0"
-            anchors.top: parent.top
-            anchors.topMargin: 8
-            anchors.left: parent.left
-            anchors.leftMargin: 8
-            anchors.right: parent.right
-            anchors.rightMargin: 8
-        }
+        ListView {
+            model: stopWaitTimeModel
 
-        StopTimeInfo {
-            id: stopTime1
-            objectName: "stopTime1"
-            anchors.top: stopTime0.bottom
-            anchors.topMargin: 8
-            anchors.left: parent.left
-            anchors.leftMargin: 8
-            anchors.right: parent.right
-            anchors.rightMargin: 8
+            delegate: StopTimeInfo {
+                time: timeData
+                position: positionData
+                busId: busIdData
+            }
         }
+    }
 
-        StopTimeInfo {
-            id: stopTime2
-            objectName: "stopTime2"
-            anchors.top: stopTime1.bottom
-            anchors.topMargin: 8
-            anchors.left: parent.left
-            anchors.leftMargin: 8
-            anchors.right: parent.right
-            anchors.rightMargin: 8
-        }
+
+
+    function setItem(index, time, position, busId) {
+        stopWaitTimeModel.set(index, {"timeData": time, "positionData": position, "busIdData": busId});
     }
 }

@@ -18,6 +18,7 @@ void BusSchedule::showBusSchedule() {
 
     QObject* busScheduleView = rootObject->findChild<QObject*>(QStringLiteral("busScheduleView"));
     busScheduleView->setProperty("id", bus.getId());
+    busScheduleView->setProperty("status", bus.getStatusString().isEmpty() ? "Unknown" : bus.getStatusString());
 
     const QList<Direction> directions = bus.getRoute().getDirections().values();
     for (int i = 0; i < directions.size(); i++) {

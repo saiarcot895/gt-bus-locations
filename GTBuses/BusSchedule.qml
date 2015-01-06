@@ -8,6 +8,7 @@ Item {
     height: parent.height
 
     property int id
+    property string status
 
     Label {
         id: busIdLabel
@@ -18,12 +19,21 @@ Item {
         text: "Bus ID: " + id
     }
 
+    Label {
+        id: statusLabel
+        anchors.top: busIdLabel.bottom
+        anchors.topMargin: 6
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+        text: "Location: " + status
+    }
+
     ListModel {
         id: scheduleModel
     }
 
     ScrollView {
-        anchors.top: busIdLabel.bottom
+        anchors.top: statusLabel.bottom
         anchors.topMargin: 6
         anchors.left: parent.left
         anchors.leftMargin: 8

@@ -22,6 +22,7 @@ Item {
         anchors.left: label1.right
         anchors.leftMargin: 6
         text: "Show bus schedule"
+        enabled: busId != 0
         onClicked: mainWindow.displayBusSchedule(busId)
     }
 

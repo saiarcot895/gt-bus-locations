@@ -24,6 +24,7 @@ void MainController::continueLoading() {
         mainWindow = new MainWindow(rootObject, this);
         busSchedule = new BusSchedule(rootObject, this);
 
+        engine->rootContext()->setContextProperty("mainController", this);
         engine->rootContext()->setContextProperty("mainWindow", mainWindow);
         engine->rootContext()->setContextProperty("busSchedule", busSchedule);
 
@@ -34,4 +35,8 @@ void MainController::continueLoading() {
 void MainController::showBusSchedule(Bus bus) {
     busSchedule->setBus(bus);
     busSchedule->showBusSchedule();
+}
+
+void MainController::showMainWindow() {
+    mainWindow->showMainWindow();
 }

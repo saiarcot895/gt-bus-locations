@@ -13,6 +13,7 @@ public:
     explicit MainController(QObject *parent = 0);
 
     void showBusSchedule(Bus bus);
+    Q_INVOKABLE void showMainWindow();
 
 private slots:
     void continueLoading();

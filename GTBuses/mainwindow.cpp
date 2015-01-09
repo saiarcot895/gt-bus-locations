@@ -22,7 +22,8 @@ MainWindow::MainWindow(QObject* rootObject, QObject *parent) :
 
 void MainWindow::showMainWindow() {
     Q_ASSERT(rootObject);
-    rootObject->findChild<QObject*>("pageLoader")->setProperty("source", QStringLiteral("qrc:///mainWindow.qml"));
+    rootObject->findChild<QObject*>("mainWindowItem")->setProperty("visible", true);
+    rootObject->findChild<QObject*>("busScheduleItem")->setProperty("visible", false);
     visible = true;
 }
 

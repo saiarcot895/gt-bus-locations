@@ -14,9 +14,10 @@ void BusSchedule::setBus(Bus bus) {
 
 void BusSchedule::showBusSchedule() {
     Q_ASSERT(rootObject);
-    rootObject->findChild<QObject*>("pageLoader")->setProperty("source", QStringLiteral("qrc:///BusSchedule.qml"));
+    rootObject->findChild<QObject*>("mainWindowItem")->setProperty("visible", false);
+    rootObject->findChild<QObject*>("busScheduleItem")->setProperty("visible", true);
 
-    QObject* busScheduleView = rootObject->findChild<QObject*>(QStringLiteral("busScheduleView"));
+    QObject* busScheduleView = rootObject->findChild<QObject*>(QStringLiteral("busScheduleItem"));
     busScheduleView->setProperty("id", bus.getId());
     busScheduleView->setProperty("status", bus.getStatusString().isEmpty() ? "Unknown" : bus.getStatusString());
 
@@ -28,7 +29,7 @@ void BusSchedule::showBusSchedule() {
             const Stop stop = stops.at(j);
 
             bool highlight = false;
-            if (bus.getStatus() == Bus::Arriving && bus.getArrivingStop() == stop) {
+            if ((bus.getStatus() == Bus::Arriving || bus.getStatus() == Bus::AtStop) && bus.getArrivingStop() == stop) {
                 highlight = true;
             } else if (bus.getStatus() == Bus::Departing && bus.getDepartingStop() == stop) {
                 highlight = true;
@@ -42,7 +43,7 @@ void BusSchedule::showBusSchedule() {
                 if (stopWait.getBusId() == bus.getId()) {
                     QMetaObject::invokeMethod(busScheduleView, "addItem",
                                               Q_ARG(QVariant, stop.getStopName()),
-                                              Q_ARG(QVariant, stopWait.getTime()),
+                                              Q_ARG(QVariant, QString("%1 minutes").arg(stopWait.getTime() / 60)),
                                               Q_ARG(QVariant, highlight));
                     break;
                 }

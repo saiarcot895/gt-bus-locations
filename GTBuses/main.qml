@@ -18,9 +18,17 @@ ApplicationWindow {
         }
     }
 
-    Loader {
-        id: pageLoader
-        objectName: "pageLoader"
+    MainWindow {
+        id: mainWindowItem
+        objectName: "mainWindowItem"
         anchors.fill: parent
+        visible: false
+    }
+
+    BusSchedule {
+        id: busScheduleItem
+        objectName: "busScheduleItem"
+        anchors.fill: parent
+        visible: false
     }
 }

@@ -3,7 +3,6 @@ import QtQuick.Controls 1.1
 
 Item {
     id: mainWindowItem
-    objectName: "mainWindowItem"
     anchors.fill: parent
 
     property var routesModel: null

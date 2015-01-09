@@ -3,17 +3,26 @@ import QtQuick.Controls 1.1
 
 Item {
     id: busScheduleView
-    objectName: "busScheduleView"
     width: parent.width
     height: parent.height
 
     property int id
     property string status
 
-    Label {
-        id: busIdLabel
+    Button {
+        id: backButton
         anchors.top: parent.top
         anchors.topMargin: 8
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+        text: "Back"
+        onClicked: mainController.showMainWindow()
+    }
+
+    Label {
+        id: busIdLabel
+        anchors.top: backButton.bottom
+        anchors.topMargin: 6
         anchors.left: parent.left
         anchors.leftMargin: 8
         text: "Bus ID: " + id
@@ -55,7 +64,7 @@ Item {
                     id: label1
                     text: stopName
                     anchors.top: parent.top
-                    anchors.topMargin: 8
+                    anchors.topMargin: 4
                     anchors.left: parent.left
                     anchors.leftMargin: 8
                 }
@@ -65,7 +74,7 @@ Item {
                     text: time
                     horizontalAlignment: Text.AlignRight
                     anchors.top: parent.top
-                    anchors.topMargin: 8
+                    anchors.topMargin: 4
                     anchors.right: parent.right
                     anchors.rightMargin: 8
                 }

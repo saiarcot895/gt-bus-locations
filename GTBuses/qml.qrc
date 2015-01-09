@@ -2,7 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>StopTimeInfo.qml</file>
-        <file>mainWindow.qml</file>
+        <file>MainWindow.qml</file>
         <file>BusSchedule.qml</file>
     </qresource>
 </RCC>

@@ -405,7 +405,7 @@ void GTWikiBusFetcher::readBusPositions(QNetworkReply *reply) {
                     }
                 }
 
-                Bus bus;
+                Bus bus = route.getBuses().value(busId);
                 bus.setId(busId);
                 bus.setRoute(route);
                 bus.setDirection(direction);

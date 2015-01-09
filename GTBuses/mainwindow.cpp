@@ -10,14 +10,14 @@
 #include "bus.h"
 #include "maincontroller.h"
 
-MainWindow::MainWindow(QObject* rootObject, QObject *parent) :
+MainWindow::MainWindow(GTWikiBusFetcher *fetcher, QObject* rootObject, QObject *parent) :
     QObject(parent),
-    fetcher(new GTWikiBusFetcher),
+    fetcher(fetcher),
     rootObject(rootObject),
     visible(false)
 {
-    connect(fetcher, SIGNAL(loadingDone()), this, SLOT(displayRoutes()));
-    connect(fetcher, SIGNAL(waitTimesUpdated(QString)), this, SLOT(refreshWaitTimes(QString))); 
+    connect(this->fetcher, &GTWikiBusFetcher::loadingDone, this, &MainWindow::displayRoutes);
+    connect(this->fetcher, &GTWikiBusFetcher::waitTimesUpdated, this, &MainWindow::refreshWaitTimes);
 }
 
 void MainWindow::showMainWindow() {

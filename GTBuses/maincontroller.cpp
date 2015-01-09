@@ -21,8 +21,10 @@ void MainController::continueLoading() {
     } else {
         rootObject = component->create();
 
-        mainWindow = new MainWindow(rootObject, this);
-        busSchedule = new BusSchedule(rootObject, this);
+        fetcher = new GTWikiBusFetcher;
+
+        mainWindow = new MainWindow(fetcher, rootObject, this);
+        busSchedule = new BusSchedule(fetcher, rootObject, this);
 
         engine->rootContext()->setContextProperty("mainController", this);
         engine->rootContext()->setContextProperty("mainWindow", mainWindow);

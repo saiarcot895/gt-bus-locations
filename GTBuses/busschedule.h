@@ -3,18 +3,21 @@
 
 #include <QObject>
 #include "bus.h"
+#include "gtwikibusfetcher.h"
 
 class BusSchedule : public QObject
 {
     Q_OBJECT
 public:
-    explicit BusSchedule(QObject* rootObject, QObject *parent = 0);
+    explicit BusSchedule(GTWikiBusFetcher* fetcher, QObject* rootObject, QObject *parent = 0);
 
     void setBus(Bus bus);
     void showBusSchedule();
-
+public slots:
+    void updateTimes(QString routeTag);
 private:
     QObject* rootObject;
+    GTWikiBusFetcher* fetcher;
     Bus bus;
 
 };

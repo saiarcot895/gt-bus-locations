@@ -10,7 +10,7 @@ class MainWindow : public QObject
 {
     Q_OBJECT
 public:
-    explicit MainWindow(QObject* rootObject, QObject *parent = 0);
+    explicit MainWindow(GTWikiBusFetcher* fetcher, QObject* rootObject, QObject *parent = 0);
 
     void showMainWindow();
 
@@ -21,8 +21,6 @@ public:
     ~MainWindow();
 public slots:
     Q_INVOKABLE void displayStopTimes(int stopIndex);
-
-private slots:
     void displayRoutes();
     void refreshWaitTimes(QString routeTag);
 

@@ -5,6 +5,7 @@
 #include <QQmlApplicationEngine>
 #include "mainwindow.h"
 #include "busschedule.h"
+#include "gtwikibusfetcher.h"
 
 class MainController : public QObject
 {
@@ -21,6 +22,7 @@ private slots:
 private:
     MainWindow* mainWindow;
     BusSchedule* busSchedule;
+    GTWikiBusFetcher* fetcher;
 
     QQmlApplicationEngine* engine;
     QQmlComponent* component;

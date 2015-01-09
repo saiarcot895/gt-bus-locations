@@ -85,4 +85,8 @@ Item {
     function addItem(stopName, time, highlight) {
         scheduleModel.append({"stopName": stopName, "time": time, "highlight": highlight});
     }
+
+    function clearItems() {
+        scheduleModel.clear();
+    }
 }

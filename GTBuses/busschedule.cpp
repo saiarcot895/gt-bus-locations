@@ -2,10 +2,12 @@
 
 #include <QVariant>
 
-BusSchedule::BusSchedule(QObject *rootObject, QObject *parent) :
+BusSchedule::BusSchedule(GTWikiBusFetcher* fetcher, QObject *rootObject, QObject *parent) :
     QObject(parent),
+    fetcher(fetcher),
     rootObject(rootObject)
 {
+    connect(fetcher, &GTWikiBusFetcher::waitTimesUpdated, this, &BusSchedule::updateTimes);
 }
 
 void BusSchedule::setBus(Bus bus) {
@@ -16,10 +18,19 @@ void BusSchedule::showBusSchedule() {
     Q_ASSERT(rootObject);
     rootObject->findChild<QObject*>("mainWindowItem")->setProperty("visible", false);
     rootObject->findChild<QObject*>("busScheduleItem")->setProperty("visible", true);
+    updateTimes(bus.getRoute().getTag());
+}
+
+void BusSchedule::updateTimes(QString routeTag) {
+    if (bus.getRoute().getTag() != routeTag) {
+        return;
+    }
 
     QObject* busScheduleView = rootObject->findChild<QObject*>(QStringLiteral("busScheduleItem"));
     busScheduleView->setProperty("id", bus.getId());
     busScheduleView->setProperty("status", bus.getStatusString().isEmpty() ? "Unknown" : bus.getStatusString());
+
+    QMetaObject::invokeMethod(busScheduleView, "clearItems");
 
     const QList<Direction> directions = bus.getRoute().getDirections().values();
     for (int i = 0; i < directions.size(); i++) {

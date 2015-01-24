@@ -40,7 +40,7 @@ void GTWikiBusFetcher::getRouteConfig() {
 void GTWikiBusFetcher::readRouteConfig() {
     if (routeConfigReply->error() != QNetworkReply::NoError) {
         qCritical() << "Error occurred: " + routeConfigReply->errorString();
-
+        routeConfigReply->deleteLater();
         connect(timer, SIGNAL(timeout()), this, SLOT(getRouteConfig()));
         timer->setSingleShot(true);
         timer->start(5000);
@@ -48,8 +48,9 @@ void GTWikiBusFetcher::readRouteConfig() {
     }
 
     QXmlStreamReader reader(routeConfigReply->readAll());
-    if (reader.hasError()) {
+    if (Q_UNLIKELY(reader.hasError())) {
         qCritical() << "Error parsing route config XML: " + reader.errorString();
+        routeConfigReply->deleteLater();
         return;
     }
 
@@ -309,18 +310,21 @@ void GTWikiBusFetcher::distributeInfo(QNetworkReply *reply) {
         readWaitTimes(reply);
     } else {
         qWarning() << "Unknown network reply received";
+        reply->deleteLater();
     }
 }
 
 void GTWikiBusFetcher::readWaitTimes(QNetworkReply *reply) {
     if (reply->error() != QNetworkReply::NoError) {
         qCritical() << "Error occurred: " + reply->errorString();
+        reply->deleteLater();
         return;
     }
 
     QXmlStreamReader reader(reply->readAll());
     if (reader.hasError()) {
         qCritical() << "Error parsing stop prediction XML: " + reader.errorString();
+        reply->deleteLater();
         return;
     }
 
@@ -372,12 +376,14 @@ void GTWikiBusFetcher::readWaitTimes(QNetworkReply *reply) {
 void GTWikiBusFetcher::readBusPositions(QNetworkReply *reply) {
     if (reply->error() != QNetworkReply::NoError) {
         qCritical() << "Error occurred: " + reply->errorString();
+        reply->deleteLater();
         return;
     }
 
     QXmlStreamReader reader(reply->readAll());
-    if (reader.hasError()) {
+    if (Q_UNLIKELY(reader.hasError())) {
         qCritical() << "Error parsing stop prediction XML: " + reader.errorString();
+        reply->deleteLater();
         return;
     }
 

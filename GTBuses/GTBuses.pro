@@ -47,3 +47,8 @@ ANDROID_EXTRA_LIBS += $$OUT_PWD/../geos/libgeos.so
 
 INCLUDEPATH += $$PWD/../geos/include
 DEPENDPATH += $$PWD/../geos/include
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+OTHER_FILES += \
+    android/AndroidManifest.xml

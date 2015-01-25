@@ -37,6 +37,7 @@ private:
     QTimer* timer;
     geos::geom::GeometryFactory* factory;
 
+    QString header;
     QList<Route> routes;
     QList<QNetworkReply*> waitTimesReplies;
     QList<QNetworkReply*> busPositionReplies;

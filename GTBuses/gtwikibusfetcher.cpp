@@ -1,4 +1,5 @@
 #include "gtwikibusfetcher.h"
+#include <QGuiApplication>
 #include <QNetworkRequest>
 #include <QXmlStreamReader>
 #include <QDebug>
@@ -19,7 +20,8 @@ GTWikiBusFetcher::GTWikiBusFetcher(QObject *parent) :
     manager(new QNetworkAccessManager(this)),
     routeConfigReply(NULL),
     timer(new QTimer(this)),
-    factory(new geos::geom::GeometryFactory(new geos::geom::PrecisionModel(), 4326))
+    factory(new geos::geom::GeometryFactory(new geos::geom::PrecisionModel(), 4326)),
+    header(QStringLiteral("GT Bus Locations %1").arg(QGuiApplication::platformName()))
 {
     getRouteConfig();
 }
@@ -32,8 +34,9 @@ void GTWikiBusFetcher::getRouteConfig() {
         routeConfigReply->deleteLater();
     }
 
-    routeConfigReply = manager->get(QNetworkRequest(
-                                        QUrl("https://gtbuses.herokuapp.com/routeConfig")));
+    QNetworkRequest routeConfigRequest(QUrl(QStringLiteral("https://gtbuses.herokuapp.com/routeConfig")));
+    routeConfigRequest.setHeader(QNetworkRequest::UserAgentHeader, header);
+    routeConfigReply = manager->get(routeConfigRequest);
     connect(routeConfigReply, SIGNAL(finished()), this, SLOT(readRouteConfig()));
 }
 
@@ -293,9 +296,15 @@ void GTWikiBusFetcher::readRouteConfig() {
 void GTWikiBusFetcher::updateInfo() {
     for (int i = 0; i < routes.size(); i++) {
         Route route = routes.at(i);
-        QNetworkReply* waitTimeReply = manager->get(QNetworkRequest(QUrl(QStringLiteral("https://gtbuses.herokuapp.com/predictions/%1").arg(route.getTag()))));
+
+        QNetworkRequest waitTimeRequest(QUrl(QStringLiteral("https://gtbuses.herokuapp.com/predictions/%1").arg(route.getTag())));
+        waitTimeRequest.setHeader(QNetworkRequest::UserAgentHeader, header);
+        QNetworkReply* waitTimeReply = manager->get(waitTimeRequest);
         waitTimesReplies.append(waitTimeReply);
-        QNetworkReply* busPositionReply = manager->get(QNetworkRequest(QUrl(QStringLiteral("https://gtbuses.herokuapp.com/locations/%1").arg(route.getTag()))));
+
+        QNetworkRequest busPositionRequest(QUrl(QStringLiteral("https://gtbuses.herokuapp.com/locations/%1").arg(route.getTag())));
+        busPositionRequest.setHeader(QNetworkRequest::UserAgentHeader, header);
+        QNetworkReply* busPositionReply = manager->get(busPositionRequest);
         busPositionReplies.append(busPositionReply);
     }
 

@@ -12,6 +12,7 @@ class MainController : public QObject
     Q_OBJECT
 public:
     explicit MainController(QObject *parent = 0);
+    ~MainController();
 
     void showBusSchedule(Bus bus);
     Q_INVOKABLE void showMainWindow();

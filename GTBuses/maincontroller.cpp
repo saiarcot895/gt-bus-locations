@@ -42,3 +42,8 @@ void MainController::showBusSchedule(Bus bus) {
 void MainController::showMainWindow() {
     mainWindow->showMainWindow();
 }
+
+MainController::~MainController() {
+    delete component;
+    delete engine;
+}

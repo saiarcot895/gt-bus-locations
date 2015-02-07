@@ -22,8 +22,7 @@ MainWindow::MainWindow(GTWikiBusFetcher *fetcher, QObject* rootObject, QObject *
 
 void MainWindow::showMainWindow() {
     Q_ASSERT(rootObject);
-    rootObject->findChild<QObject*>("mainWindowItem")->setProperty("visible", true);
-    rootObject->findChild<QObject*>("busScheduleItem")->setProperty("visible", false);
+    rootObject->findChild<QObject*>("loader")->setProperty("source", QStringLiteral(""));
     visible = true;
 }
 

@@ -16,8 +16,7 @@ void BusSchedule::setBus(Bus bus) {
 
 void BusSchedule::showBusSchedule() {
     Q_ASSERT(rootObject);
-    rootObject->findChild<QObject*>("mainWindowItem")->setProperty("visible", false);
-    rootObject->findChild<QObject*>("busScheduleItem")->setProperty("visible", true);
+    rootObject->findChild<QObject*>("loader")->setProperty("source", QStringLiteral("qrc:///BusSchedule.qml"));
     updateTimes(bus.getRoute().getTag());
 }
 
@@ -26,7 +25,11 @@ void BusSchedule::updateTimes(QString routeTag) {
         return;
     }
 
-    QObject* busScheduleView = rootObject->findChild<QObject*>(QStringLiteral("busScheduleItem"));
+    QObject* loader = rootObject->findChild<QObject*>(QStringLiteral("loader"));
+    QObject* busScheduleView = loader->property("item").value<QObject*>();
+    if (!busScheduleView) {
+        return;
+    }
     busScheduleView->setProperty("id", bus.getId());
     busScheduleView->setProperty("status", bus.getStatusString().isEmpty() ? "Unknown" : bus.getStatusString());
 

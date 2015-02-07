@@ -22,13 +22,12 @@ ApplicationWindow {
         id: mainWindowItem
         objectName: "mainWindowItem"
         anchors.fill: parent
-        visible: false
+        visible: loader.source == ""
     }
 
-    BusSchedule {
-        id: busScheduleItem
-        objectName: "busScheduleItem"
+    Loader {
+        id: loader
+        objectName: "loader"
         anchors.fill: parent
-        visible: false
     }
 }

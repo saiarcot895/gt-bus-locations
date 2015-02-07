@@ -31,19 +31,22 @@ void GTWikiBusFetcher::getRouteConfig() {
     disconnect(timer, SIGNAL(timeout()), this, SLOT(getRouteConfig()));
     if (routeConfigReply != NULL) {
         disconnect(routeConfigReply, SIGNAL(finished()), this, SLOT(readRouteConfig()));
+        disconnect(routeConfigReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(readRouteConfig()));
         routeConfigReply->deleteLater();
     }
 
-    QNetworkRequest routeConfigRequest(QUrl(QStringLiteral("https://gtbuses.herokuapp.com/routeConfig")));
+    QNetworkRequest routeConfigRequest(QUrl(QStringLiteral("http://gtbuses.herokuapp.com/routeConfig")));
     routeConfigRequest.setHeader(QNetworkRequest::UserAgentHeader, header);
     routeConfigReply = manager->get(routeConfigRequest);
     connect(routeConfigReply, SIGNAL(finished()), this, SLOT(readRouteConfig()));
+    connect(routeConfigReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(readRouteConfig()));
 }
 
 void GTWikiBusFetcher::readRouteConfig() {
     if (routeConfigReply->error() != QNetworkReply::NoError) {
         qCritical() << "Error occurred: " + routeConfigReply->errorString();
         routeConfigReply->deleteLater();
+        routeConfigReply = NULL;
         connect(timer, SIGNAL(timeout()), this, SLOT(getRouteConfig()));
         timer->setSingleShot(true);
         timer->start(5000);
@@ -108,6 +111,8 @@ void GTWikiBusFetcher::readRouteConfig() {
                 route.getDirections().insert(direction.getTag(), direction);
                 settingDirection = false;
             } else if (reader.name() == QStringLiteral("route")) {
+                route.getStops().clear();
+
                 bool changesMade = true;
 
                 if (route.getTag() == "green") {
@@ -175,7 +180,6 @@ void GTWikiBusFetcher::readRouteConfig() {
                 QSharedPointer<geos::geom::LineString> busPath(factory->createLineString(paths.first()));
 
                 QList<Stop> stops;
-
                 for (int i = 0; i < route.getDirections().values().size(); i++) {
                     Direction direction = route.getDirections().values().at(i);
                     stops += direction.getStops();
@@ -285,7 +289,6 @@ void GTWikiBusFetcher::readRouteConfig() {
     routeConfigReply->deleteLater();
 
     connect(timer, SIGNAL(timeout()), this, SLOT(updateInfo()));
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(distributeInfo(QNetworkReply*)));
 
     updateInfo();
 
@@ -300,30 +303,21 @@ void GTWikiBusFetcher::updateInfo() {
         QNetworkRequest waitTimeRequest(QUrl(QStringLiteral("https://gtbuses.herokuapp.com/predictions/%1").arg(route.getTag())));
         waitTimeRequest.setHeader(QNetworkRequest::UserAgentHeader, header);
         QNetworkReply* waitTimeReply = manager->get(waitTimeRequest);
-        waitTimesReplies.append(waitTimeReply);
+        connect(waitTimeReply, SIGNAL(finished()), this, SLOT(readWaitTimes()));
 
         QNetworkRequest busPositionRequest(QUrl(QStringLiteral("https://gtbuses.herokuapp.com/locations/%1").arg(route.getTag())));
         busPositionRequest.setHeader(QNetworkRequest::UserAgentHeader, header);
         QNetworkReply* busPositionReply = manager->get(busPositionRequest);
-        busPositionReplies.append(busPositionReply);
+        connect(busPositionReply, SIGNAL(finished()), this, SLOT(readBusPositions()));
     }
 
 }
 
-void GTWikiBusFetcher::distributeInfo(QNetworkReply *reply) {
-    if (busPositionReplies.contains(reply)) {
-        busPositionReplies.removeOne(reply);
-        readBusPositions(reply);
-    } else if (waitTimesReplies.contains(reply)) {
-        waitTimesReplies.removeOne(reply);
-        readWaitTimes(reply);
-    } else {
-        qWarning() << "Unknown network reply received";
-        reply->deleteLater();
-    }
-}
+void GTWikiBusFetcher::readWaitTimes() {
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
 
-void GTWikiBusFetcher::readWaitTimes(QNetworkReply *reply) {
+    disconnect(reply, SIGNAL(finished()), this, SLOT(readWaitTimes()));
+
     if (reply->error() != QNetworkReply::NoError) {
         qCritical() << "Error occurred: " + reply->errorString();
         reply->deleteLater();
@@ -354,7 +348,12 @@ void GTWikiBusFetcher::readWaitTimes(QNetworkReply *reply) {
                         continue;
                     }
 
-                    QList<Stop> stops = route.getStops().values();
+                    const QList<Direction> directions = route.getDirections().values();
+                    QList<Stop> stops;
+                    for (int j = 0; j < directions.size(); j++) {
+                        stops.append(directions.at(j).getStops());
+                    }
+
                     for (int j = 0; j < stops.size(); j++) {
                         Stop routeStop = stops.at(j);
                         if (routeStop.getTag() == stopTag) {
@@ -382,7 +381,11 @@ void GTWikiBusFetcher::readWaitTimes(QNetworkReply *reply) {
     emit waitTimesUpdated(routeTag);
 }
 
-void GTWikiBusFetcher::readBusPositions(QNetworkReply *reply) {
+void GTWikiBusFetcher::readBusPositions() {
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+
+    disconnect(reply, SIGNAL(finished()), this, SLOT(readBusPositions()));
+
     if (reply->error() != QNetworkReply::NoError) {
         qCritical() << "Error occurred: " + reply->errorString();
         reply->deleteLater();

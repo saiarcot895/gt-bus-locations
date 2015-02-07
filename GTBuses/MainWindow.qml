@@ -4,6 +4,7 @@ import QtQuick.Controls 1.1
 Item {
     id: mainWindowItem
     anchors.fill: parent
+    focus: true
 
     property var routesModel: null
     property var directionsModel: null
@@ -121,7 +122,6 @@ Item {
             }
         }
     }
-
 
 
     function setItem(index, time, position, busId) {

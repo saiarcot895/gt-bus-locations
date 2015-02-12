@@ -43,6 +43,10 @@ void MainController::showMainWindow() {
     mainWindow->showMainWindow();
 }
 
+void MainController::showAboutScreen() {
+    rootObject->findChild<QObject*>("loader")->setProperty("source", QStringLiteral("qrc:///About.qml"));
+}
+
 MainController::~MainController() {
     delete component;
     delete engine;

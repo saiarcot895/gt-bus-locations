@@ -11,6 +11,12 @@ ApplicationWindow {
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
+
+            MenuItem {
+                text: qsTr("About")
+                onTriggered: mainController.showAboutScreen();
+            }
+
             MenuItem {
                 text: qsTr("Exit")
                 onTriggered: Qt.quit();

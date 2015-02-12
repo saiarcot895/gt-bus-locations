@@ -16,6 +16,7 @@ public:
 
     void showBusSchedule(Bus bus);
     Q_INVOKABLE void showMainWindow();
+    Q_INVOKABLE void showAboutScreen();
 
 private slots:
     void continueLoading();

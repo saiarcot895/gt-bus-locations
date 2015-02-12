@@ -21,15 +21,16 @@ void BusSchedule::showBusSchedule() {
 }
 
 void BusSchedule::updateTimes(QString routeTag) {
+    if (rootObject->findChild<QObject*>("loader")->property("source") != QStringLiteral("qrc:///BusSchedule.qml")) {
+        return;
+    }
+
     if (bus.getRoute().getTag() != routeTag) {
         return;
     }
 
     QObject* loader = rootObject->findChild<QObject*>(QStringLiteral("loader"));
     QObject* busScheduleView = loader->property("item").value<QObject*>();
-    if (!busScheduleView) {
-        return;
-    }
     busScheduleView->setProperty("id", bus.getId());
     busScheduleView->setProperty("status", bus.getStatusString().isEmpty() ? "Unknown" : bus.getStatusString());
 

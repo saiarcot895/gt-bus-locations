@@ -4,5 +4,6 @@
         <file>StopTimeInfo.qml</file>
         <file>MainWindow.qml</file>
         <file>BusSchedule.qml</file>
+        <file>About.qml</file>
     </qresource>
 </RCC>

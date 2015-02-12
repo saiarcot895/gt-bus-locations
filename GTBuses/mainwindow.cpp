@@ -100,8 +100,3 @@ void MainWindow::displayBusSchedule(int busId) {
     visible = false;
     static_cast<MainController*>(parent())->showBusSchedule(bus);
 }
-
-MainWindow::~MainWindow() {
-    delete fetcher;
-    delete rootObject;
-}

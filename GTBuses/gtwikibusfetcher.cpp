@@ -44,7 +44,7 @@ void GTWikiBusFetcher::getRouteConfig() {
 
 void GTWikiBusFetcher::readRouteConfig() {
     if (routeConfigReply->error() != QNetworkReply::NoError) {
-        qCritical() << "Error occurred: " + routeConfigReply->errorString();
+        qCritical() << "Error occurred:" << routeConfigReply->errorString();
         routeConfigReply->deleteLater();
         routeConfigReply = NULL;
         connect(timer, SIGNAL(timeout()), this, SLOT(getRouteConfig()));
@@ -55,7 +55,7 @@ void GTWikiBusFetcher::readRouteConfig() {
 
     QXmlStreamReader reader(routeConfigReply->readAll());
     if (Q_UNLIKELY(reader.hasError())) {
-        qCritical() << "Error parsing route config XML: " + reader.errorString();
+        qCritical() << "Error parsing route config XML:" << reader.errorString();
         routeConfigReply->deleteLater();
         return;
     }
@@ -180,8 +180,7 @@ void GTWikiBusFetcher::readRouteConfig() {
                 QSharedPointer<geos::geom::LineString> busPath(factory->createLineString(paths.first()));
 
                 QList<Stop> stops;
-                for (int i = 0; i < route.getDirections().values().size(); i++) {
-                    Direction direction = route.getDirections().values().at(i);
+                foreach (Direction direction, route.getDirections()) {
                     stops += direction.getStops();
                 }
 
@@ -297,9 +296,7 @@ void GTWikiBusFetcher::readRouteConfig() {
 }
 
 void GTWikiBusFetcher::updateInfo() {
-    for (int i = 0; i < routes.size(); i++) {
-        Route route = routes.at(i);
-
+    foreach (const Route route, routes) {
         QNetworkRequest waitTimeRequest(QUrl(QStringLiteral("https://gtbuses.herokuapp.com/predictions/%1").arg(route.getTag())));
         waitTimeRequest.setHeader(QNetworkRequest::UserAgentHeader, header);
         QNetworkReply* waitTimeReply = manager->get(waitTimeRequest);
@@ -323,14 +320,14 @@ void GTWikiBusFetcher::readWaitTimes() {
     disconnect(reply, SIGNAL(finished()), this, SLOT(readWaitTimes()));
 
     if (reply->error() != QNetworkReply::NoError) {
-        qCritical() << "Error occurred: " + reply->errorString();
+        qCritical() << "Error occurred:" << reply->errorString();
         reply->deleteLater();
         return;
     }
 
     QXmlStreamReader reader(reply->readAll());
     if (reader.hasError()) {
-        qCritical() << "Error parsing stop prediction XML: " + reader.errorString();
+        qCritical() << "Error parsing stop prediction XML:" << reader.errorString();
         reply->deleteLater();
         return;
     }
@@ -391,14 +388,14 @@ void GTWikiBusFetcher::readBusPositions() {
     disconnect(reply, SIGNAL(finished()), this, SLOT(readBusPositions()));
 
     if (reply->error() != QNetworkReply::NoError) {
-        qCritical() << "Error occurred: " + reply->errorString();
+        qCritical() << "Error occurred:" << reply->errorString();
         reply->deleteLater();
         return;
     }
 
     QXmlStreamReader reader(reply->readAll());
     if (Q_UNLIKELY(reader.hasError())) {
-        qCritical() << "Error parsing stop prediction XML: " + reader.errorString();
+        qCritical() << "Error parsing stop prediction XML:" << reader.errorString();
         reply->deleteLater();
         return;
     }
@@ -508,7 +505,5 @@ QList<Route> GTWikiBusFetcher::getRoutes() const {
 }
 
 GTWikiBusFetcher::~GTWikiBusFetcher() {
-    delete timer;
-    delete manager;
     delete factory;
 }

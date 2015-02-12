@@ -3,8 +3,6 @@ import QtQuick.Controls 1.1
 
 Item {
     id: busScheduleView
-    width: parent.width
-    height: parent.height
 
     property int id
     property string status

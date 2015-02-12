@@ -21,7 +21,7 @@ void MainController::continueLoading() {
     } else {
         rootObject = component->create();
 
-        fetcher = new GTWikiBusFetcher;
+        fetcher = new GTWikiBusFetcher(this);
 
         mainWindow = new MainWindow(fetcher, rootObject, this);
         busSchedule = new BusSchedule(fetcher, rootObject, this);

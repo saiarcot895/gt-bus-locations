@@ -56,7 +56,7 @@ Item {
             delegate: Rectangle {
                 height: Math.max(label1.height, label2.height) + 4
                 width: parent.width
-                color: highlight ? "yellow" : "transparent"
+                color: highlight ? Qt.rgba(0.239, 0.662, 0.884) : "transparent"
 
                 Label {
                     id: label1

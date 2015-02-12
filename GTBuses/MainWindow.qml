@@ -9,6 +9,7 @@ Item {
     property var routesModel: null
     property var directionsModel: null
     property var stopsModel: null
+    property string messages
 
     Component {
         id: stopsDelegate
@@ -121,6 +122,18 @@ Item {
                 busId: busIdData
             }
         }
+    }
+
+    Label {
+        id: messageLabel
+        text: messages
+        color: "red"
+        horizontalAlignment: Text.AlignHCenter
+        wrapMode: Text.Wrap
+        width: parent.width - 16
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 8
+        anchors.horizontalCenter: parent.horizontalCenter
     }
 
 

@@ -25,6 +25,7 @@ public:
     QHash<QString, Stop>& getStops();
     QColor getColor() const;
     QHash<int, Bus>& getBuses();
+    QStringList& getMessages();
 
     void setRouteName(QString routeName);
     void setTag(QString tag);

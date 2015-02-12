@@ -311,6 +311,10 @@ void GTWikiBusFetcher::updateInfo() {
         connect(busPositionReply, SIGNAL(finished()), this, SLOT(readBusPositions()));
     }
 
+    QNetworkRequest messageRequest(QUrl(QStringLiteral("https://gtbuses.herokuapp.com/messages")));
+    messageRequest.setHeader(QNetworkRequest::UserAgentHeader, header);
+    QNetworkReply* messageReply = manager->get(messageRequest);
+    connect(messageReply, SIGNAL(finished()), this, SLOT(readMessages()));
 }
 
 void GTWikiBusFetcher::readWaitTimes() {
@@ -446,6 +450,57 @@ void GTWikiBusFetcher::readBusPositions() {
     reply->deleteLater();
 
     emit waitTimesUpdated(routeTag);
+}
+
+void GTWikiBusFetcher::readMessages() {
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+
+    if (reply->error() != QNetworkReply::NoError) {
+        qCritical() << "Error occurred:" << reply->errorString();
+        reply->deleteLater();
+        return;
+    }
+
+    QXmlStreamReader reader(reply->readAll());
+    if (Q_UNLIKELY(reader.hasError())) {
+        qCritical() << "Error parsing messages XML:" << reader.errorString();
+        reply->deleteLater();
+        return;
+    }
+
+    foreach (Route route, routes) {
+        route.getMessages().clear();
+    }
+
+    bool allRoutes = false;
+    QString routeTag;
+
+    while (!reader.atEnd()) {
+        switch (reader.readNext()) {
+        case QXmlStreamReader::StartElement:
+            if (reader.name() == QStringLiteral("route")) {
+                routeTag = reader.attributes().value("tag").toString();
+                if (routeTag == QStringLiteral("all")) {
+                    allRoutes = true;
+                } else {
+                    allRoutes = false;
+                }
+            } else if (reader.name() == QStringLiteral("text")) {
+                foreach (Route route, routes) {
+                    if (allRoutes || route.getTag() == routeTag) {
+                        route.getMessages().append(reader.readElementText());
+                    }
+                }
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    reply->deleteLater();
+
+    emit messagesUpdated();
 }
 
 QList<Route> GTWikiBusFetcher::getRoutes() const {

@@ -18,6 +18,7 @@ MainWindow::MainWindow(GTWikiBusFetcher *fetcher, QObject* rootObject, QObject *
 {
     connect(this->fetcher, &GTWikiBusFetcher::loadingDone, this, &MainWindow::displayRoutes);
     connect(this->fetcher, &GTWikiBusFetcher::waitTimesUpdated, this, &MainWindow::refreshWaitTimes);
+    connect(this->fetcher, &GTWikiBusFetcher::messagesUpdated, this, &MainWindow::updateMessages);
 }
 
 void MainWindow::showMainWindow() {
@@ -84,6 +85,14 @@ void MainWindow::refreshWaitTimes(QString routeTag) {
     if (selectedRoute.getTag() == routeTag) {
         displayWaitTimes();
     }
+}
+
+void MainWindow::updateMessages() {
+    QString messages;
+    foreach (QString message, selectedRoute.getMessages()) {
+        messages += message + "\n";
+    }
+    rootObject->findChild<QObject*>("mainWindowItem")->setProperty("messages", messages);
 }
 
 void MainWindow::displayBusSchedule(int busId) {

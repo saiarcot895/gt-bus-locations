@@ -21,6 +21,7 @@ public:
 signals:
     void loadingDone();
     void waitTimesUpdated(QString routeTag);
+    void messagesUpdated();
 
 private slots:
     void readRouteConfig();
@@ -28,6 +29,7 @@ private slots:
     void getRouteConfig();
     void readWaitTimes();
     void readBusPositions();
+    void readMessages();
 
 private:
     QNetworkAccessManager* manager;

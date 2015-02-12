@@ -23,6 +23,7 @@ public slots:
     Q_INVOKABLE void displayStopTimes(int stopIndex);
     void displayRoutes();
     void refreshWaitTimes(QString routeTag);
+    void updateMessages();
 
 private:
     void displayWaitTimes();

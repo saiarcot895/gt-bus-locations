@@ -10,6 +10,7 @@ public:
     QHash<QString, Stop> stops;
     QColor color;
     QHash<int, Bus> buses;
+    QStringList messages;
 };
 
 Route::Route() : data(new RouteData)
@@ -42,6 +43,10 @@ QColor Route::getColor() const {
 
 QHash<int, Bus>& Route::getBuses() {
     return data->buses;
+}
+
+QStringList& Route::getMessages() {
+    return data->messages;
 }
 
 void Route::setRouteName(QString routeName) {

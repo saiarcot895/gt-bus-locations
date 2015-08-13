@@ -35,7 +35,7 @@ void GTWikiBusFetcher::getRouteConfig() {
         routeConfigReply->deleteLater();
     }
 
-    QNetworkRequest routeConfigRequest(QUrl(QStringLiteral("http://gtbuses.herokuapp.com/routeConfig")));
+    QNetworkRequest routeConfigRequest(QUrl(QStringLiteral("https://gtbuses.herokuapp.com/routeConfig")));
     routeConfigRequest.setHeader(QNetworkRequest::UserAgentHeader, header);
     routeConfigReply = manager->get(routeConfigRequest);
     connect(routeConfigReply, SIGNAL(finished()), this, SLOT(readRouteConfig()));

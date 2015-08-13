@@ -49,17 +49,17 @@ QSharedPointer<geos::geom::LineString> Stop::getDepartingSegment() const {
 
 void Stop::setStopName(QString stopName) {
     data->stopName = stopName;
-    emit stopNameChanged();
+    //emit stopNameChanged();
 }
 
 void Stop::setTag(QString tag) {
     data->tag = tag;
-    emit tagChanged();
+    //emit tagChanged();
 }
 
 void Stop::setCoordinate(QSharedPointer<geos::geom::Point> coordinate) {
     data->coordinate = coordinate;
-    emit coordinateChanged();
+    //emit coordinateChanged();
 }
 
 void Stop::setArrivingSegment(QSharedPointer<geos::geom::LineString> arrivingSegment) {

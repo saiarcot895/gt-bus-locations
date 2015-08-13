@@ -7,7 +7,7 @@
 
 class StopWaitData;
 
-class StopWait : public QObject
+class StopWait
 {
 public:
     StopWait();

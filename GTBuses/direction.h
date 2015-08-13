@@ -8,7 +8,7 @@
 
 class DirectionData;
 
-class Direction : public QObject
+class Direction
 {
 public:
     Direction();

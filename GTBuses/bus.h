@@ -13,7 +13,7 @@
 
 class BusData;
 
-class Bus : public QObject
+class Bus
 {
 public:
     Bus();

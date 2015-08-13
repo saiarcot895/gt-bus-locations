@@ -10,9 +10,8 @@
 
 class StopData;
 
-class Stop : public QObject
+class Stop
 {
-    Q_OBJECT
 public:
     Stop();
     Stop(const Stop &);

@@ -11,7 +11,7 @@
 class RouteData;
 class Bus;
 
-class Route : public QObject
+class Route
 {
 public:
     Route();

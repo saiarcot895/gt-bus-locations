@@ -1,5 +1,6 @@
 import QtQuick 2.2
 import QtQuick.Controls 1.1
+//import QtLocation 5.4
 
 Item {
     id: mainWindowItem
@@ -106,7 +107,7 @@ Item {
         visible: false
         anchors.top: comboBox3.bottom
         anchors.topMargin: 6
-        anchors.bottom: parent.bottom
+        anchors.bottom: messageLabel.top
         anchors.bottomMargin: 8
         anchors.left: parent.left
         anchors.leftMargin: 8
@@ -136,6 +137,23 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
+/*
+    Plugin {
+        id: somePlugin
+        preferred: ["osm"]
+    }
+
+    Map {
+        id: map
+        anchors.bottom: messageLabel.top
+        anchors.top: stopWaitTimeView.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        plugin: somePlugin
+        zoomLevel: map.minimumZoomLevel
+        gesture.enabled: true
+    }
+*/
 
     function setItem(index, time, position, busId) {
         stopWaitTimeModel.set(index, {"timeData": time, "positionData": position, "busIdData": busId});
